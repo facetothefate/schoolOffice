@@ -1,0 +1,40 @@
+<!DOCTYPE>
+<html ng-app="school-office">
+	<head>
+		<link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
+		<link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link rel="stylesheet" href="style/style.css">
+		<title>School Office</title>
+	</head>
+	<body>
+		<div id="main-view" layout="row">
+			<div id="main-menu" flex="15" class="mdl-color--blue-grey-800">
+				<div layout="column">
+					<div flex="20" class="main-menu-header mdl-color--blue-grey-900"></div>
+					<div flex="80" class="main-menu-body">
+						<md-list>
+							<md-list-item class="mdl-color--blue-grey-800" ng-repeat="item in menu">
+								<md-icon md-font-icon="material-icons"> {{ item.icon }}</md-icon>
+								<div class="md-secondary">
+									<p>{{ item.title }}</p>
+						  		</div>
+							</md-list-item>
+						</md-list>
+					</div>
+				</div>
+			</div>
+			<div flex="85" ng-view></div>
+		</div>
+		<!--libs-->
+		<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-aria/angular-aria.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-messages/angular-messages.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-material/angular-material.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-route/angular-route.min.js"></script>
+		<!--main-->
+		<script type="text/javascript" src="src/app.js"></script>
+		<script type="text/javascript" src="src/admin/adminHomeController.js"></script>
+	</body>
+</html>
