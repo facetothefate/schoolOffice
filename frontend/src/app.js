@@ -1,10 +1,11 @@
 /////////////////////////
 //Dependencies
 /////////////////////////
-var schooloffice = angular.module('school-office', 
+var schooloffice = angular.module('school-office',
 	[
 		'ngMaterial',
-		'ngRoute'
+		'ngRoute',
+		"ngTable"
 	]);
 
 
@@ -12,16 +13,21 @@ var schooloffice = angular.module('school-office',
 //Route configuration
 ////////////////////////
 schooloffice.config(function($routeProvider) {
- 
+
   $routeProvider
     .when('/adminHome', {
       controller:'AdminHomeController',
       templateUrl:'templates/admin/adminHome.html',
     })
+		.when('/adminStudents', {
+      controller:'AdminStudentController',
+      templateUrl:'templates/admin/adminStudent.html',
+    })
     /*.when('/login', {
       controller:'UserController',
       templateUrl:'templates/login.html',
     })
+
     .otherwise({
       redirectTo:'/login'
     })*/

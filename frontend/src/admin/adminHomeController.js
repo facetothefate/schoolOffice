@@ -1,30 +1,3 @@
 angular.module('school-office').controller('AdminHomeController',function($scope,$rootScope){
-	var menu=[
-		{
-			title:"Semesters",
-			icon:"schedule",
-			src:"",
-		},
-		{
-			title:"Courses",
-			icon:"",
-			src:"",
-		},
-		{
-			title:"Students",
-			icon:"",
-			src:"",
-		},
-		{
-			title:"Teachers",
-			icon:"",
-			src:"",
-		},
-		{
-			title:"Transcripts",
-			icon:"",
-			src:"",
-		},
-	];
-	$rootScope.menu = menu;
+
 });

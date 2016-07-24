@@ -8,8 +8,14 @@ html,body{
 }
 .main-menu-body{
 	overflow: auto;
-	
+
 }
-.main-menu-body .md-list-item-text{
+.main-menu-body md-list-item{
 	color:white !important;
+}
+.main-menu-body md-icon{
+	color:white !important;
+}
+.md-media-sm md-icon{
+	font-size: 80px;
 }
