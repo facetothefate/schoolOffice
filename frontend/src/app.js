@@ -19,9 +19,13 @@ schooloffice.config(function($routeProvider) {
       controller:'AdminHomeController',
       templateUrl:'templates/admin/adminHome.html',
     })
-		.when('/adminStudents', {
+	.when('/adminStudents', {
       controller:'AdminStudentController',
       templateUrl:'templates/admin/adminStudent.html',
+    })
+    .when('/adminStudent/:action/:studentNumber', {
+      controller:'AdminStudentDetailController',
+      templateUrl:'templates/admin/adminStudentDetail.html',
     })
     /*.when('/login', {
       controller:'UserController',

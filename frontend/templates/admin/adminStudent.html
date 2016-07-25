@@ -1,32 +1,61 @@
-<md-content class="md-padding" layout-xs="column" layout="row">
-	<md-card>
+<md-content class="md-padding" layout-xs="column" layout="column">
+	<md-card class="school-office-main-card">
 		<md-card-title>
-      <md-card-title-text>
-        <span class="md-headline">Students</span><br>
-      </md-card-title-text>
+		    <md-card-title-text>
+		        <span class="md-headline">Students</span><br>
+		    </md-card-title-text>
 			<md-card-title-media>
 				<div class="md-media-sm card-media">
 					<md-icon md-font-icon="material-icons">face</md-icon>
 				</div>
 			</md-card-title-media>
-    </md-card-title>
+    	</md-card-title>
 		<md-card-content>
 			<p>
-				<table ng-table="studentTable">
+				<table ng-table="studentTable" class="mdl-data-table mdl-data-table--selectable  school-office-main-table">
 					<tr ng-repeat="student in $data">
-							<td title="'Student number'" filter="{ student_number: 'number'}" sortable="'student_number'">
-									{{student.student_number}}</td>
-			        <td title="'Surname'" filter="{ surname: 'text'}" sortable="'surname'">
-			            {{student.surname}}</td>
-							<td title="'Given Names'" filter="{ given_names: 'text'}" sortable="'given_names'">
-			            {{student.given_names}}</td>
-			        <td title="'Gender'" filter="{ gender: 'text'}" sortable="'gender'">
-			            {{student.gender}}</td>
-							<td title="'Birth day'">
-			            {{student.birth | date:'MM/dd/yyyy'}}</td>
-			    </tr>
+						<td title="'Student number'" filter="{ student_number: 'number'}" sortable="'student_number'">
+								{{student.student_number}}
+						</td>
+				        <td title="'Surname'" filter="{ surname: 'text'}" sortable="'surname'">
+				            {{student.surname}}
+				        </td>
+						<td title="'Given Names'" filter="{ given_names: 'text'}" sortable="'given_names'">
+				            {{student.given_names}}
+				        </td>
+				        <td title="'Gender'" filter="{ gender: 'text'}" sortable="'gender'">
+				            {{student.gender}}
+				        </td>
+						<td title="'Birth day'">
+				            {{student.birth | date:'MM/dd/yyyy'}}</td>
+				        <td>
+				        	<md-button class="md-icon-button md-accent" ng-href="#/adminStudent/edit/{{student.student_number}}">
+				        		<md-icon md-font-icon="material-icons">edit</md-icon>
+				        	</md-button>
+				        </td>
+				    </tr>
 				</table>
 			</p>
 		</md-card-content>
 	</md-card>
+	<div layout="row">
+		<div flex=25>
+			<md-card class="mdl-color--green-100">
+				<md-card-title>
+				    <md-card-title-text>
+				        <span class="md-headline">Regsiter</span>
+				        <span class="md-subhead">a new student</span>
+				    </md-card-title-text>
+				    <md-card-title-media>
+						<div class="md-media-sm card-media">
+							<md-icon md-font-icon="material-icons">add</md-icon>
+						</div>
+					</md-card-title-media>
+				</md-card-title>
+			</md-card>
+		</div>
+		<div flex>
+			
+		</div>
+	</div>
 </md-content>

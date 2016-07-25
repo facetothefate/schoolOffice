@@ -1,0 +1,98 @@
+<md-content class="md-padding" layout-xs="column" layout="column">
+	<div layout="row">
+		<h2><span ng-hide="edit">Regist a </span> Student <span ng-show="edit">: {{student.surname}} {{student.given_names}}</span></h2>
+	</div>
+	<md-tabs md-dynamic-height md-border-bottom>
+      <md-tab label="Student Detail">
+        <md-content class="md-padding">
+        	<form name="studentForm">
+		        <div layout-gt-xs="row">
+		          <md-input-container class="md-block" flex=25>
+		            <label>Student Number</label>
+		            <input ng-model="student.student_number" disabled>
+		          </md-input-container>
+		          <md-datepicker flex=25 ng-model="student.enter_date" md-placeholder="Enter date">
+		          </md-datepicker>
+		        </div>
+		        <div layout-gt-sm="row">
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>First name</label>
+		            <input ng-model="student.given_names">
+		          </md-input-container>
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>Last name</label>
+		            <input ng-model="student.surname">
+		          </md-input-container>
+		          <md-input-container flex=10 class="md-block" flex-gt-sm>
+		            <label>Gender</label>
+		            <input ng-model="student.gender">
+		          </md-input-container>
+		        </div>
+		        <div layout-gt-sm="row">
+		        	<md-datepicker ng-model="student.birthday" md-placeholder="Birthday">
+		          </md-datepicker>
+		        </div>
+		        <md-input-container class="md-block">
+		          <label>Address</label>
+		          <input ng-model="student.address">
+		        </md-input-container>
+		        <md-input-container md-no-float class="md-block">
+		          <input ng-model="student.address2" placeholder="Address 2">
+		        </md-input-container>
+		        <div layout-gt-sm="row">
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>City</label>
+		            <input ng-model="student.city">
+		          </md-input-container>
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>State</label>
+		            <input ng-model="student.state">
+		            </md-select>
+		          </md-input-container>
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>Postal Code</label>
+		            <input name="postalCode" ng-model="student.postalCode"
+		                   required ng-pattern="/^[ABCEGHJKLMNPRSTVXY][0-9][ABCEGHJKLMNPRSTVWXYZ][0-9][ABCEGHJKLMNPRSTVWXYZ][0-9]$/" md-maxlength="6">
+		            <div ng-messages="studentForm.postalCode.$error" role="alert" multiple>
+		              <div ng-message="required" class="my-message">You must supply a postal code.</div>
+		              <div ng-message="pattern" class="my-message">That doesn't look like a valid postal
+		                code.
+		              </div>
+		              <div ng-message="md-maxlength" class="my-message">
+		                Don't use the long version silly...we don't need to be that specific...
+		              </div>
+		            </div>
+		          </md-input-container>
+		        </div>
+		        <div layout-gt-sm="row">
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>Email</label>
+		            <input ng-model="student.email">
+		          </md-input-container>
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>Telephone</label>
+		            <input ng-model="student.telephone">
+		          </md-input-container>
+		        </div>
+		        <div layout-gt-sm="row">
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>OEM/MIN</label>
+		            <input ng-model="student.oem">
+		          </md-input-container>
+		          <md-input-container class="md-block" flex-gt-sm>
+		            <label>Diploma</label>
+		            <input ng-model="student.diploma">
+		          </md-input-container>
+		        </div>
+		        <div layout-gt-sm="row">
+		        </div>
+		      </form>
+        </md-content>
+      </md-tab>
+      <md-tab ng-if="edit" label="Transcripts">
+        <md-content class="md-padding">
+          
+        </md-content>
+      </md-tab>
+    </md-tabs>
+</md-content>

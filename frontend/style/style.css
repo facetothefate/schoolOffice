@@ -19,3 +19,12 @@ html,body{
 .md-media-sm md-icon{
 	font-size: 80px;
 }
+md-card md-card-title{
+	flex: 1 1 auto;
+}
+.school-office-main-card{
+	width: 100%;
+}
+.school-office-main-table{
+	width: 100%;
+}
