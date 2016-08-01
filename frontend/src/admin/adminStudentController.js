@@ -2,21 +2,11 @@ angular.module('school-office').controller('AdminStudentController',
 [
   "NgTableParams",
   "$scope",
-function(NgTableParams,$scope){
-  var students = [{
-    "surname":"Lee",
-    "given_names":"Mary",
-    "oen":999888999,
-    "student_number":111111,
-    "gender":"F",
-    "birth":777686400000,
-    "date_entry":1220745600000,
-    "diploma":"Ontario Secondary School Diploma",
-    "address":'',
-    "hoomroom":'',
-    "OEN":'871-395-034'
-  }];
-  $scope.studentTable = new NgTableParams({}, { dataset: students});
+  "RestService",
+function(NgTableParams,$scope,rest){
+    rest.students.query(function(students){
+        $scope.studentTable = new NgTableParams({}, { dataset: students});
+    });
 }]);
 
 angular.module('school-office').controller('AdminStudentDetailController',
@@ -24,22 +14,14 @@ angular.module('school-office').controller('AdminStudentDetailController',
   "NgTableParams",
   "$scope",
   "$routeParams",
-function(NgTableParams,$scope,$routeParams){
+  "RestService",
+function(NgTableParams,$scope,$routeParams,rest){
   if($routeParams.action==="edit"){
+    rest.students.get({"id":$routeParams.studentNumber},function(student){
+        student.birthday = new Date(student.birthday);
+        $scope.student = student;
+    });
     $scope.edit = true;
-    $scope.student = {
-    "surname":"Lee",
-    "given_names":"Mary",
-    "oen":999888999,
-    "student_number":111111,
-    "gender":"F",
-    "birth":777686400000,
-    "date_entry":1220745600000,
-    "diploma":"Ontario Secondary School Diploma",
-    "address":'',
-    "hoomroom":'',
-    "OEN":'871-395-034'
-  };
 
   }else{
     $scope.edit = false;

@@ -1,6 +1,6 @@
-<md-content class="md-padding" layout-xs="column" layout="column">
+<md-content class="md-padding" layout-xs="column" layout="column" ng-cloak>
 	<div layout="row">
-		<h2><span ng-hide="edit">Regist a </span> Student <span ng-show="edit">: {{student.surname}} {{student.given_names}}</span></h2>
+		<h2><span ng-hide="edit">Regist a </span> Student <span ng-show="edit">: {{student.firstname}} {{student.lastname}}</span></h2>
 	</div>
 	<md-tabs md-dynamic-height md-border-bottom>
       <md-tab label="Student Detail">
@@ -17,11 +17,11 @@
 		        <div layout-gt-sm="row">
 		          <md-input-container class="md-block" flex-gt-sm>
 		            <label>First name</label>
-		            <input ng-model="student.given_names">
+		            <input ng-model="student.lastname">
 		          </md-input-container>
 		          <md-input-container class="md-block" flex-gt-sm>
 		            <label>Last name</label>
-		            <input ng-model="student.surname">
+		            <input ng-model="student.firstname">
 		          </md-input-container>
 		          <md-input-container flex=10 class="md-block" flex-gt-sm>
 		            <label>Gender</label>
@@ -34,7 +34,7 @@
 		        </div>
 		        <md-input-container class="md-block">
 		          <label>Address</label>
-		          <input ng-model="student.address">
+		          <input ng-model="student.address1">
 		        </md-input-container>
 		        <md-input-container md-no-float class="md-block">
 		          <input ng-model="student.address2" placeholder="Address 2">
@@ -76,8 +76,8 @@
 		        </div>
 		        <div layout-gt-sm="row">
 		          <md-input-container class="md-block" flex-gt-sm>
-		            <label>OEM/MIN</label>
-		            <input ng-model="student.oem">
+		            <label>OEN/MIN</label>
+		            <input ng-model="student.oen">
 		          </md-input-container>
 		          <md-input-container class="md-block" flex-gt-sm>
 		            <label>Diploma</label>
@@ -91,7 +91,7 @@
       </md-tab>
       <md-tab ng-if="edit" label="Transcripts">
         <md-content class="md-padding">
-          
+
         </md-content>
       </md-tab>
     </md-tabs>

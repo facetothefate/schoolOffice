@@ -1,4 +1,4 @@
-<md-content class="md-padding" layout-xs="column" layout="column">
+<md-content class="md-padding" layout-xs="column" layout="column"  ng-cloak>
 	<md-card class="school-office-main-card">
 		<md-card-title>
 		    <md-card-title-text>
@@ -18,16 +18,16 @@
 								{{student.student_number}}
 						</td>
 				        <td title="'Surname'" filter="{ surname: 'text'}" sortable="'surname'">
-				            {{student.surname}}
+				            {{student.firstname}}
 				        </td>
 						<td title="'Given Names'" filter="{ given_names: 'text'}" sortable="'given_names'">
-				            {{student.given_names}}
+				            {{student.lastname}}
 				        </td>
 				        <td title="'Gender'" filter="{ gender: 'text'}" sortable="'gender'">
 				            {{student.gender}}
 				        </td>
 						<td title="'Birth day'">
-				            {{student.birth | date:'MM/dd/yyyy'}}</td>
+				            {{student.birthday}}</td>
 				        <td>
 				        	<md-button class="md-icon-button md-accent" ng-href="#/adminStudent/edit/{{student.student_number}}">
 				        		<md-icon md-font-icon="material-icons">edit</md-icon>
@@ -55,7 +55,7 @@
 			</md-card>
 		</div>
 		<div flex>
-			
+
 		</div>
 	</div>
 </md-content>

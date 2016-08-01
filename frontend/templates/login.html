@@ -1,0 +1,33 @@
+<md-dialog aria-label="login"  ng-cloak class="login-dialog">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools mdl-color--blue-grey-800">
+        <h2>Login</h2>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+          <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+              <label>User name</label>
+              <input ng-model="username">
+            </md-input-container>
+          </div>
+          <div layout-gt-sm="row">
+            <md-input-container flex=10 class="md-block" flex-gt-sm>
+              <label>Password</label>
+              <input ng-model="password" type="password">
+            </md-input-container>
+          </div>
+          <div layout-gt-sm="row">
+              <span>{{error_msg}}</span>
+          </div>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button ng-click="ctrl.login()">
+        login
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

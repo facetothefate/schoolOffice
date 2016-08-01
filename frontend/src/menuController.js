@@ -1,24 +1,24 @@
 var menuConfig = {
-	"admin":[
+	3:[
 		{
 			title:"Home",
 			icon:"home",
-			href:"#/adminHome",
+			href:"/adminHome",
 		},
 		{
 			title:"Semesters",
 			icon:"schedule",
-			href:"#/adminSemeters",
+			href:"/adminSemeters",
 		},
 		{
 			title:"Courses",
 			icon:"library_books",
-			href:"",
+			href:"/adminCourses",
 		},
 		{
 			title:"Students",
 			icon:"face",
-			href:"#/adminStudents",
+			href:"/adminStudents",
 		},
 		{
 			title:"Teachers",
@@ -31,15 +31,22 @@ var menuConfig = {
 			href:"",
 		},
 	],
-	"teacher":[],
-	"student":[]
+	2:[],
+	1:[]
 }
 
 angular.module('school-office').controller('MenuController',function($scope,$location){
-	$scope.$on("login-success",function(data){
-		$scope.menu = menuConfig[data['role']];
-		$scope.user = data['username'];
+	if($scope.token){
+		$scope.menu = menuConfig[$scope.token['role']];
+		$scope.user = $scope.token['username'];
+		var path = $location.path();
+		if(path==="/"){
+			 $location.path(menuConfig[$scope.token['role']][0].href);
+		}
+	}
+	$scope.$on("login-success",function(e,token){
+		$scope.menu = menuConfig[token['role']];
+		$scope.user = token['username'];
+		$scope.token = token;
 	});
-	//change it later
-	$scope.menu = menuConfig['admin'];
 });

@@ -1,0 +1,36 @@
+<md-content class="md-padding" layout-xs="column" layout="column"  ng-cloak>
+	<md-card class="school-office-main-card">
+		<md-card-title>
+		    <md-card-title-text>
+		        <span class="md-headline">Courses</span><br>
+		    </md-card-title-text>
+			<md-card-title-media>
+				<div class="md-media-sm card-media">
+					<md-icon md-font-icon="material-icons"> library_books</md-icon>
+				</div>
+			</md-card-title-media>
+    	</md-card-title>
+		<md-card-content>
+			<p>
+				<table ng-table="coursesTable" class="mdl-data-table mdl-data-table--selectable  school-office-main-table">
+					<tr ng-repeat="course in $data">
+						<td title="'Code'" filter="{ code: 'text'}" sortable="'code'">
+								{{course.code}}
+						</td>
+				        <td title="'name'" filter="{ surname: 'text'}" sortable="'surname'">
+				            {{course.name}}
+				        </td>
+						<td title="'Credit'" filter="{ credit: 'number'}" sortable="'credit'">
+				            {{course.credit}}
+				        </td>
+				        <td title="'Grade'" filter="{ gender: 'number'}" sortable="'grade'">
+				            {{course.grade}}
+				        </td>
+						<td title="'category'" filter="{ category: 'text'}" sortable="'category'">
+				            {{course.category}}</td>
+				    </tr>
+				</table>
+			</p>
+		</md-card-content>
+	</md-card>
+</md-content>

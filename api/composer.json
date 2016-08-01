@@ -1,5 +1,6 @@
 {
     "require": {
-        "slim/slim": "^3.4"
+        "slim/slim": "^3.4",
+        "dyorg/slim-token-authentication": "^0.3.0"
     }
 }

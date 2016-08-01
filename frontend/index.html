@@ -1,5 +1,5 @@
 <!DOCTYPE>
-<html ng-app="school-office">
+<html ng-app="school-office" ng-cloak>
 	<head>
 		<link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
 		<link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
@@ -9,14 +9,32 @@
 		<link rel="stylesheet" href="style/style.css">
 		<title>School Office</title>
 	</head>
-	<body>
+	<body ng-controller="mainController">
 		<div id="main-view" layout="row">
 			<div id="main-menu" flex="15" class="mdl-color--blue-grey-800" ng-controller="MenuController">
-				<div layout="column">
-					<div flex="20" class="main-menu-header mdl-color--blue-grey-900"></div>
-					<div flex="80" class="main-menu-body">
+				<div>
+					<md-card class="main-menu-header mdl-color--blue-grey-900">
+						<md-card-title>
+							<md-card-title-text>
+								<span class="md-headline">{{user}}</span>
+								<span class="md-subhead">{{role_name}}</span>
+							</md-card-title-text>
+							<md-card-title-media>
+								<div class="md-media-sm card-media">
+									<img src="images/user.png">
+								</div>
+							</md-card-title-media>
+						</md-card-title>
+						<md-card-actions layout="row" layout-align="end center">
+							<md-button >
+								<md-icon md-font-icon="material-icons"> exit_to_app</md-icon>
+								Logout
+							</md-button>
+						</md-card-actions>
+					</md-card>
+					<div class="main-menu-body">
 						<md-list>
-							<md-list-item class="mdl-color--blue-grey-800" ng-repeat="item in menu" ng-href="{{item.href}}">
+							<md-list-item class="mdl-color--blue-grey-800" ng-repeat="item in menu" ng-href="#{{item.href}}">
 								<md-icon md-font-icon="material-icons"> {{ item.icon }}</md-icon>
 								<p>{{ item.title }}</p>
 							</md-list-item>
@@ -24,11 +42,12 @@
 					</div>
 				</div>
 			</div>
-			<div flex="85" ng-view></div>
+			<div flex="85" ng-view class="main"></div>
 		</div>
 		<!--libs-->
 		<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
 		<script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-resource/angular-resource.min.js"></script>
 		<script type="text/javascript" src="bower_components/angular-aria/angular-aria.min.js"></script>
 		<script type="text/javascript" src="bower_components/angular-messages/angular-messages.min.js"></script>
 		<script type="text/javascript" src="bower_components/angular-material/angular-material.min.js"></script>
@@ -36,8 +55,12 @@
 		<script type="text/javascript" src="bower_components/ng-table/dist/ng-table.js"></script>
 		<!--main-->
 		<script type="text/javascript" src="src/app.js"></script>
+		<script type="text/javascript" src="src/services/authService.js"></script>
+		<script type="text/javascript" src="src/services/restService.js"></script>
 		<script type="text/javascript" src="src/menuController.js"></script>
+		<script type="text/javascript" src="src/mainController.js"></script>
 		<script type="text/javascript" src="src/admin/adminHomeController.js"></script>
 		<script type="text/javascript" src="src/admin/adminStudentController.js"></script>
+		<script type="text/javascript" src="src/admin/adminCourseController.js"></script>
 	</body>
 </html>

@@ -5,7 +5,8 @@ var schooloffice = angular.module('school-office',
 	[
 		'ngMaterial',
 		'ngRoute',
-		"ngTable"
+		"ngTable",
+		"ngResource"
 	]);
 
 
@@ -23,6 +24,10 @@ schooloffice.config(function($routeProvider) {
       controller:'AdminStudentController',
       templateUrl:'templates/admin/adminStudent.html',
     })
+	.when('/adminCourses', {
+      controller:'AdminCourseController',
+      templateUrl:'templates/admin/adminCourse.html',
+    })
     .when('/adminStudent/:action/:studentNumber', {
       controller:'AdminStudentDetailController',
       templateUrl:'templates/admin/adminStudentDetail.html',
@@ -36,6 +41,12 @@ schooloffice.config(function($routeProvider) {
       redirectTo:'/login'
     })*/
     .otherwise({
-      redirectTo:'/adminHome'
+      redirectTo:'/'
     });
+});
+///////////////////////////
+//Http config
+//////////////////////////
+schooloffice.config(function($httpProvider) {
+	$httpProvider.interceptors.push('AuthHttpInterceptor');
 });
