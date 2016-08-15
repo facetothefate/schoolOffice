@@ -8,7 +8,7 @@ var menuConfig = {
 		{
 			title:"Semesters",
 			icon:"schedule",
-			href:"/adminSemeters",
+			href:"/adminSemesters",
 		},
 		{
 			title:"Courses",
@@ -32,7 +32,18 @@ var menuConfig = {
 		},
 	],
 	2:[],
-	1:[]
+	1:[
+		{
+			title:"Home",
+			icon:"home",
+			href:"/studentHome",
+		},
+		{
+			title:"Schedule",
+			icon:"schedule",
+			href:"/studentSchedule",
+		}
+	]
 }
 
 angular.module('school-office').controller('MenuController',function($scope,$location){
@@ -48,5 +59,11 @@ angular.module('school-office').controller('MenuController',function($scope,$loc
 		$scope.menu = menuConfig[token['role']];
 		$scope.user = token['username'];
 		$scope.token = token;
+	});
+	$scope.$on("logout",function(e){
+		$scope.menu = null;
+		$scope.user = null;
+		$scope.token = null;
+		$location.path('/');
 	});
 });

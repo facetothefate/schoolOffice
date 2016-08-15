@@ -74,7 +74,6 @@ $app->post('/api/user/login',function(Request $req, Response $res){
             ]));
             return $res;
         }
-
     }catch(UnauthorizedException $e){
         $res = $res->withStatus(401)->withHeader('Content-type', 'application/json');
         $res->getBody()->write(json_encode([
@@ -148,8 +147,8 @@ $app->get('/api/students',function (Request $req, Response $res) {
                 ON `so_students`.`so_diplomas_id` = `so_diplomas`.`id`"
             );
             $ret = $sth->execute();
-            $students = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$students);
+            $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
+            return sendJsonArray($res,$resData);
         },
         $req,$res
     );
@@ -186,12 +185,51 @@ $app->get('/api/students/{student_number}',function (Request $req, Response $res
             $student_number =  $req->getAttribute('student_number');
             $sth->bindParam(':student_number', $student_number, PDO::PARAM_STR);
             $ret = $sth->execute();
-            $student = $sth->fetch(PDO::FETCH_ASSOC);
-            return sendJsonObject($res,$student);
+            $resData = $sth->fetch(PDO::FETCH_ASSOC);
+            return sendJsonObject($res,$resData);
         },
         $req,$res
     );
 });
+$app->get('/api/students/user/{username}',function (Request $req, Response $res){
+    return handelDb(
+        function($req,$res,$db){
+            $sth = $db->prepare(
+            "SELECT
+                `so_students`.`student_number`,
+                `so_students`.`oen`,
+                `so_students`.`enter_grade`,
+                `so_students`.`enter_date`,
+                `so_students`.`birthday`,
+                `so_users`.`firstname`,
+                `so_users`.`lastname`,
+                `so_users`.`telephone`,
+                `so_users`.`email`,
+                `so_users`.`address1`,
+                `so_users`.`address2`,
+                `so_users`.`city`,
+                `so_users`.`state`,
+                `so_users`.`postal_code`,
+                `so_diplomas`.`id` AS 'diploma_id',
+                `so_diplomas`.`name` AS 'diploma'
+
+                FROM `so_students`
+                INNER JOIN `so_users`
+                ON `so_students`.`so_users_id`= `so_users`.`id`
+                INNER JOIN `so_diplomas`
+                ON `so_students`.`so_diplomas_id` = `so_diplomas`.`id`
+                WHERE `so_users`.`username` = :username"
+            );
+            $username =  $req->getAttribute('username');
+            $sth->bindParam(':username', $username, PDO::PARAM_STR);
+            $ret = $sth->execute();
+            $resData = $sth->fetch(PDO::FETCH_ASSOC);
+            return sendJsonObject($res,$resData);
+        },
+        $req,$res
+    );
+});
+
 
 
 /************************************
@@ -215,8 +253,59 @@ $app->get('/api/courses',function (Request $req, Response $res) {
 
             );
             $ret = $sth->execute();
-            $students = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$students);
+            $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
+            return sendJsonArray($res,$resData);
+        },
+        $req,$res
+    );
+});
+$app->get('/api/courses/category/{category}',function (Request $req, Response $res) {
+    return handelDb(
+        function($req,$res,$db){
+            $sth = $db->prepare(
+                "SELECT
+                    `so_courses`.course_code AS 'code',
+                    `so_courses`.name,
+                    `so_courses`.credit,
+                    `so_courses`.grade,
+                    `so_courses`.prerequisite,
+                    `so_courses`.`so_course_categories_id` AS 'category_id',
+                    `so_course_categories`.`title` AS 'category'
+                    FROM `so_courses`
+                    INNER JOIN `so_course_categories`
+                    ON `so_courses`.`so_course_categories_id` = `so_course_categories`.`id`
+                    WHERE `so_courses`.`so_course_categories_id` = :category"
+
+            );
+            $category =  $req->getAttribute('category');
+            $sth->bindParam(':category', $category, PDO::PARAM_INT);
+            $ret = $sth->execute();
+            $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
+            return sendJsonArray($res,$resData);
+        },
+        $req,$res
+    );
+});
+/************************************
+*   Semesters API
+*************************************/
+
+$app->get('/api/semesters',function (Request $req, Response $res) {
+    return handelDb(
+        function($req,$res,$db){
+            $sth = $db->prepare(
+                "SELECT
+                    `so_semesters`.`id`,
+                    `so_semesters`.`semester`,
+                    `so_schedule`.`start`,
+                    `so_schedule`.`end`
+                    FROM `so_semesters`
+                    INNER JOIN `so_schedule`
+                    ON `so_semesters`.`so_schedule_id` = `so_schedule`.`id`"
+            );
+            $ret = $sth->execute();
+            $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
+            return sendJsonArray($res,$resData);
         },
         $req,$res
     );
@@ -226,6 +315,28 @@ $app->get('/api/courses',function (Request $req, Response $res) {
 *   Exam API
 *************************************/
 
-
+/************************************
+*   Conditions API
+*************************************/
+$app->get('/api/conditions/{diploma}',function (Request $req, Response $res) {
+    return handelDb(
+        function($req,$res,$db){
+            $sth = $db->prepare(
+                "SELECT
+                    *
+                    FROM `so_graduation_conditions`
+                    INNER JOIN `so_course_categories`
+                    ON `so_course_categories`.`id` = `so_graduation_conditions`.`so_course_categories_id`
+                    WHERE `so_graduation_conditions`.`so_diplomas_id` = :diploma"
+            );
+            $diploma =  $req->getAttribute('diploma');
+            $sth->bindParam(':diploma', $diploma, PDO::PARAM_INT);
+            $ret = $sth->execute();
+            $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
+            return sendJsonArray($res,$resData);
+        },
+        $req,$res
+    );
+});
 $app->run();
 ?>

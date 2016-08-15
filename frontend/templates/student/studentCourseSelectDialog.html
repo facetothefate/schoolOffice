@@ -1,0 +1,61 @@
+<md-dialog aria-label="Mango (Fruit)"  ng-cloak>
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools mdl-color--blue-grey-800">
+                <h2>Select a course under {{selectedCategory.title}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+                    <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content class="loading-container">
+            <div class="md-dialog-content">
+                <span>Your current Grade: {{ctrl.currentGrade}}</span>
+                <p>{{ctrl.info}}</p>
+                <table ng-table="studentCourseSelctionTable" class="mdl-data-table mdl-data-table--selectable  school-office-main-table">
+                    <table ng-table="coursesTable" class="mdl-data-table mdl-data-table--selectable  school-office-main-table">
+                        <tr ng-repeat="course in $data">
+                            <td title="'Grade'" filter="{ gender: 'number'}" sortable="'grade'">
+    				            {{course.grade}}
+    				        </td>
+                            <td title="'Code'" filter="{ code: 'text'}" sortable="'code'">
+                                {{course.code}}
+                            </td>
+                            <td title="'name'" filter="{ surname: 'text'}" sortable="'surname'">
+                                {{course.name}}
+                            </td>
+                            <td title="'Credit'" filter="{ credit: 'number'}" sortable="'credit'">
+                                {{course.credit}}
+                            </td>
+                            <td>
+                                <md-checkbox ng-modle="course.selected">
+                                    Select
+                                </md-checkbox>
+                            </td>
+                        </tr>
+                    </table>
+                    </tr>
+                </table>
+            </div>
+            <div class="loading" ng-show="ctrl.loading" >
+                <div layout="row"  layout-align="space-around">
+                    <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                </div>
+                <div layout="column" layout-align="space-around" style="text-align:center">
+                    <br>
+                    <h4>Submiting your selection..</h4>
+                    <p>Please wait...</p>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="ctrl.select()" ng-disabled="ctrl.loading">
+                Submit
+            </md-button>
+            <md-button ng-click="ctrl.cancel()" ng-disabled="ctrl.loading">
+                Cancel
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

@@ -26,7 +26,7 @@
 							</md-card-title-media>
 						</md-card-title>
 						<md-card-actions layout="row" layout-align="end center">
-							<md-button >
+							<md-button ng-click="logout()" ng-if="user">
 								<md-icon md-font-icon="material-icons"> exit_to_app</md-icon>
 								Logout
 							</md-button>
@@ -62,5 +62,7 @@
 		<script type="text/javascript" src="src/admin/adminHomeController.js"></script>
 		<script type="text/javascript" src="src/admin/adminStudentController.js"></script>
 		<script type="text/javascript" src="src/admin/adminCourseController.js"></script>
+		<script type="text/javascript" src="src/admin/adminSemesterController.js"></script>
+		<script type="text/javascript" src="src/student/studentHomeController.js"></script>
 	</body>
 </html>

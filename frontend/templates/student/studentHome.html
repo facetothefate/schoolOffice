@@ -1,0 +1,26 @@
+<md-content class="md-padding" layout-xs="column" layout="column"  ng-cloak>
+
+    <div layout="row">
+		<h3>Graduation Conditions</h3>
+	</div>
+    <md-card layout="column" ng-repeat="condition in conditions">
+        <md-card-title>
+            <md-card-title-text>
+               <span class="md-headline">{{condition.category.title}}</span>
+               <span class="md-subhead" ng-repeat="detail in condition.details">{{detail.text}}</span>
+            </md-card-title-text>
+        </md-card-title>
+        <md-card-content layout="row" layout-align="space-between">
+            <md-list  ng-cloak>
+                <md-list-item>
+                    <p>
+                        <b>Select a class under this Category</b>
+                    </p>
+                    <md-button class="md-icon-button" ng-click=openSelection(condition.category)>
+                        <md-icon md-font-icon="material-icons">add</md-icon>
+                    </md-button>
+                </md-list-item>
+            </md-list>
+        </md-card-content>
+    </md-card>
+</md-content>

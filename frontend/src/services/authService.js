@@ -14,7 +14,7 @@ angular.module('school-office').factory('AuthService',function($http,$q,$window)
             return deferred.promise;
         },
         'logout':function(username){
-
+            $window.sessionStorage.removeItem('token');
         },
         'getLocalToken':function(){
             return JSON.parse($window.sessionStorage.getItem('token'));

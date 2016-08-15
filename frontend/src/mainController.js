@@ -36,5 +36,10 @@ angular.module('school-office').controller('mainController',[
         $scope.$on('access-denied',function(){
             showDialog();
         });
+        $scope.logout = function(){
+            AuthService.logout();
+            $rootScope.$broadcast('logout');
+            showDialog();
+        };
     }
 ]);
