@@ -4,10 +4,29 @@ angular.module('school-office').factory('RestService',function($resource){
         'student_username':$resource('../api/students/user/:username',{username:"@username"}),
         'courses':$resource('../api/courses/:id',{id:'@id'}),
         'courses_category':$resource('../api/courses/category/:id',{id:'@id'}),
+        'course_selections':$resource('../api/course-selections/:studentNumber',{studentNumber:'@student_number'},{
+            'get':{
+                isArray:true,
+                method:"GET",
+            },
+            /*'save':{
+                url:"../api/course-selections/",
+                method:"POST"
+            }*/
+            'remove':{
+                url:"../api/course-selections/student/:studentNumber/semester/:semester/code/:code",
+                method:"DELETE",
+                params:{
+                    studentNumber:"@student_number",
+                    semester:"@semester_id",
+                    code:"@code"
+                }
+            }
+        }),
         'semesters':$resource('../api/semesters/:id',{id:'@id'}),
+        'semesters_open':$resource('../api/semester/open',{}),
         'conditions':$resource('../api/conditions/:diploma',{diploma:'@so_diplomas_id'},{
             'get':{
-                url:"../api/conditions/:diploma",
                 isArray:true,
                 method:"GET",
             }

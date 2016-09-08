@@ -12,7 +12,7 @@
         <md-dialog-content class="loading-container">
             <div class="md-dialog-content">
                 <span>Your current Grade: {{ctrl.currentGrade}}</span>
-                <p>{{ctrl.info}}</p>
+                <p>{{ctrl.error_msg}}</p>
                 <table ng-table="studentCourseSelctionTable" class="mdl-data-table mdl-data-table--selectable  school-office-main-table">
                     <table ng-table="coursesTable" class="mdl-data-table mdl-data-table--selectable  school-office-main-table">
                         <tr ng-repeat="course in $data">
@@ -29,7 +29,7 @@
                                 {{course.credit}}
                             </td>
                             <td>
-                                <md-checkbox ng-modle="course.selected">
+                                <md-checkbox ng-modle="course.selected" ng-click="ctrl.selectRow(course)">
                                     Select
                                 </md-checkbox>
                             </td>

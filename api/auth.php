@@ -6,7 +6,7 @@ class UnauthorizedException extends \Exception implements UnauthorizedExceptionI
 class InvaildUsernamePasswordException extends \Exception {}
 class TokenAuth{
 
-    public function verifyToken($token){
+    public function verifyToken($res,$token){
         if(!$token){
             throw new UnauthorizedException('Unauthorized Access');
         }
@@ -17,9 +17,9 @@ class TokenAuth{
         $users = $sth->fetchAll(PDO::FETCH_ASSOC);
         if($users&&sizeof($users)==1){
             if(MD5($users[0]['username'])==substr($token,0,32)&&strtotime($users['token_expire'])>strtotime(time())){
-                /**
-                * TO-do add access rights
-                */
+                if(strpos("/api/admin",$res.getResourceUri())===0&&intval($users['role'])!==3){
+                    throw new UnauthorizedException('Unauthorized Access');
+                }
                 $update_sth = $db->prepare(
                     "UPDATE `so_users`
                         SET

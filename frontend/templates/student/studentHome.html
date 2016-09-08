@@ -1,26 +1,146 @@
 <md-content class="md-padding" layout-xs="column" layout="column"  ng-cloak>
-
-    <div layout="row">
-		<h3>Graduation Conditions</h3>
-	</div>
-    <md-card layout="column" ng-repeat="condition in conditions">
-        <md-card-title>
+    <md-card layout="column">
+        <md-card-title class="mdl-color--teal-100">
             <md-card-title-text>
-               <span class="md-headline">{{condition.category.title}}</span>
-               <span class="md-subhead" ng-repeat="detail in condition.details">{{detail.text}}</span>
+               <span class="md-headline">{{student.firstname}} {{student.lastname}}</span>
             </md-card-title-text>
         </md-card-title>
-        <md-card-content layout="row" layout-align="space-between">
-            <md-list  ng-cloak>
-                <md-list-item>
-                    <p>
-                        <b>Select a class under this Category</b>
-                    </p>
-                    <md-button class="md-icon-button" ng-click=openSelection(condition.category)>
-                        <md-icon md-font-icon="material-icons">add</md-icon>
-                    </md-button>
-                </md-list-item>
-            </md-list>
+        <md-card-content>
+            <hr>
+            <table flex="100" class="mdl-data-table so-info-table" style="width:100%">
+                <tbody>
+                    <tr>
+                        <td>
+                             <span class="so-info-title">Student Number:</span>{{student.student_number}}
+                        </td>
+                        <td>
+                            <span class="so-info-title">OEN:</span> <span>{{student.oen}}</span>
+                        </td>
+                        <td>
+                            <span class="so-info-title">Birthday:</span> {{student.birthday}}
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="so-info-title">Enter Date:</span>{{student.enter_date}}
+                        </td>
+                        <td>
+                            <span class="so-info-title">Enter Grade:</span>{{student.enter_grade}}
+                        </td>
+                        <td>
+                            <span class="so-info-title">Current Grade:</span>{{currentGrade}}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <span class="so-info-title">Telephone:</span>{{student.telephone}}
+                        </td>
+                        <td>
+                            <span class="so-info-title">Email:</span>{{student.email}}
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="so-info-title">Diploma:</span>
+                        </td>
+                        <td colspan="2">
+                            {{student.diploma}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="so-info-title">Address:</span>
+                        </td>
+                        <td colspan="2">
+                            {{student.address1}},{{student.address2}},{{studnet.city}},{{student.state}},{{student.postal_code}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr>
+            <h4>
+                Curret Open to register semester:
+                <b>{{semester.semester}}<b>
+            </h4>
+            <hr>
+            <div class="">
+                <div ng-repeat="condition in conditions">
+                    <md-card class="{{condition.color}}" >
+                        <md-card-title >
+                            <md-card-title-text>
+                               <span class="md-headline">{{condition.category.title}}</span>
+                               <span class="md-subhead" ng-repeat="detail in condition.details">{{detail.text}}</span>
+                               <!--<span class="md-subhead"><b>Select a class under this Category</b></span>-->
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content layout-align="space-between">
+                            <table class="mdl-data-table" style="width:100%;min-width:100%"  ng-cloak>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Grade
+                                        </th>
+                                        <th>
+                                            Code
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Credit
+                                        </th>
+                                        <th>
+                                            Semester
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr  ng-repeat ="selection in condition.selections">
+                                        <td>
+                                            {{selection.grade}}
+                                        </td>
+                                        <td>
+                                            {{selection.code}}
+                                        </td>
+                                        <td>
+                                            {{selection.name}}
+                                        </td>
+                                        <td>
+                                            {{selection.credit}}
+                                        </td>
+                                        <td>
+                                            {{selection.semester}}
+                                        </td>
+                                        <td>
+                                            {{selection.status_text}}
+                                        </td>
+                                        <td>
+                                            <md-button ng-show="selection.removable" ng-click="removeSelection(selection)">remove</md-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </md-card-content>
+                        <md-card-actions layout="row">
+                            <md-button  ng-click=openSelection(condition.category)>
+                                <md-icon md-font-icon="material-icons">add</md-icon> Select a Course
+                            </md-button>
+                        </md-card-actions>
+                    </md-card>
+                    <hr>
+                </div>
+            </div>
         </md-card-content>
     </md-card>
+
 </md-content>

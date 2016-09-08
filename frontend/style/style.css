@@ -57,3 +57,23 @@ md-card md-card-title{
 	background: white;
 	z-index: 10;
 }
+.so-info-title{
+	font-weight: bold;
+	padding-right: 20px;
+}
+.so-info-table tr td{
+	text-align: left;
+}
+.so-card-flow{
+	-webkit-column-count: 2;
+  	-moz-column-count: 2;
+  	column-count: 2;
+  	-moz-column-gap:5px;
+  	-webkit-column-gap:5px;
+ 	column-gap: 10px;
+ 	width: 100%;
+}
+.so-card-flow md-card{
+	margin: 0;
+	margin-bottom: 0px;
+}

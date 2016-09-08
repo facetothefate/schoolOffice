@@ -63,4 +63,5 @@ schooloffice.config(function($routeProvider) {
 //////////////////////////
 schooloffice.config(function($httpProvider) {
 	$httpProvider.interceptors.push('AuthHttpInterceptor');
+	//$httpProvider.defaults.headers.delete = { "Content-Type": "application/json;charset=utf-8" };
 });

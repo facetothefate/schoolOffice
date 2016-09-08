@@ -2,10 +2,11 @@ angular.module('school-office').controller('StudentHomeController',
 [
   "$scope",
   "RestService",
+  "ColorService",
   "$mdMedia",
   "$mdDialog",
   "NgTableParams",
-function($scope,rest,$mdMedia,$mdDialog,NgTableParams){
+function($scope,rest,color,$mdMedia,$mdDialog,NgTableParams){
     function getCondtionText(condition){
         var res = {
             text:"",
@@ -55,64 +56,102 @@ function($scope,rest,$mdMedia,$mdDialog,NgTableParams){
         }
         return res;
     }
-
-    rest.student_username.get($scope.token,function(student){
-        $scope.student = student;
-        var enterDate = new Date(student.enter_date);
-        var enterYear = enterDate.getFullYear();
-        var enterMonth = enterDate.getMonth()+1;
-        var enterGrade = parseInt(student.enter_grade);
-        var currentGrade = enterGrade;
-        var currentDate = new Date();
-        var currentYear = currentDate.getFullYear();
-        var currentMonth = currentDate.getMonth()+1;
-        if(enterYear == currentYear){
-            if(enterMonth<9&&currentMonth>=9){
-                currentGrade ++;
-            }
-        }else if(enterYear < currentYear){
-            if(enterMonth<9){
-                currentGrade ++;
-            }
-            if(currentMonth>=9){
-                currentGrade ++;
-            }
-            if(currentYear - enterYear>1){
-                currentGrade += currentYear - enterYear;
-            }
+    function renderHome(){
+        if(!$scope.token||!$scope.token){
+            $scope.student = null;
+            $scope.conditions = null;
+            return;
         }
-        $scope.currentGrade = currentGrade;
-
-        //then get all the conditons
-        rest.conditions.get({diploma:1},function(conditions){
-            var clean_conditions = [];
-            var cate_index = {};
-            var index;
-            for(var i = 0;i<conditions.length;i++){
-                var cate_id = conditions[i].so_course_categories_id;
-                if(!cate_index[cate_id]){
-                    clean_conditions.push({
-                        details:[getCondtionText(conditions[i])],
-                        conditions:[conditions[i]],
-                        category:{
-                            title:conditions[i].title,
-                            id:cate_id,
-                        }
-                    });
-                    index = clean_conditions.length-1;
-                    cate_index[cate_id] = index;
-                }else{
-                    var condition = clean_conditions[cate_index[cate_id]];
-                    condition.details.push(getCondtionText[i]);
-                    condition.conditions.push(condition[i]);
+        rest.student_username.get({username:$scope.token.username},function(student){
+            $scope.student = student;
+            var enterDate = new Date(student.enter_date);
+            var enterYear = enterDate.getFullYear();
+            var enterMonth = enterDate.getMonth()+1;
+            var enterGrade = parseInt(student.enter_grade);
+            var currentGrade = enterGrade;
+            var currentDate = new Date();
+            var currentYear = currentDate.getFullYear();
+            var currentMonth = currentDate.getMonth()+1;
+            if(enterYear == currentYear){
+                if(enterMonth<9&&currentMonth>=9){
+                    currentGrade ++;
+                }
+            }else if(enterYear < currentYear){
+                if(enterMonth<9){
+                    currentGrade ++;
+                }
+                if(currentMonth>=9){
+                    currentGrade ++;
+                }
+                if(currentYear - enterYear>1){
+                    currentGrade += currentYear - enterYear;
                 }
             }
-            console.log(clean_conditions);
-            $scope.conditions = clean_conditions;
+            $scope.currentGrade = currentGrade;
+
+            rest.semesters_open.get({},function(semester){
+                $scope.semester = semester;
+            });
+            //then get all the conditons
+            rest.conditions.get({diploma:1},function(conditions){
+                var clean_conditions = [];
+                var cate_index = {};
+                var index;
+                for(var i = 0;i<conditions.length;i++){
+                    var cate_id = conditions[i].so_course_categories_id;
+                    var index = cate_index[cate_id];
+                    if(!index && index!==0){
+                        clean_conditions.push({
+                            details:[getCondtionText(conditions[i])],
+                            conditions:[conditions[i]],
+                            category:{
+                                title:conditions[i].title,
+                                id:cate_id,
+                            },
+                            color:color.getLightColor(i),
+                            selections:[]
+                        });
+                        index = clean_conditions.length-1;
+                        cate_index[cate_id] = index;
+                    }else{
+                        var condition = clean_conditions[cate_index[cate_id]];
+                        condition.details.push(getCondtionText[i]);
+                        condition.conditions.push(condition[i]);
+                    }
+                }
+                rest.course_selections.get({studentNumber:$scope.student.student_number},function(selections){
+                    for(var i=0;i<selections.length;i++){
+                        switch (selections[i].status) {
+                            case '0':
+                                selections[i].removable = true;
+                                selections[i].status_text = 'Under review';
+                                break;
+                            case '1':
+                                selections[i].status_text = 'Selected';
+                            default:
+                                selections[i].removable = false;
+
+                        }
+                        selections[i].code = selections[i].code.trim();
+                        var cate_id = parseInt(selections[i].category_id);
+                        var index = cate_index[cate_id];
+                        if(!index && index!==0){
+                            //to-do
+                        }else{
+                            clean_conditions[cate_index[cate_id]].selections.push(selections[i])
+                        }
+                    }
+                    console.log(clean_conditions);
+                    $scope.conditions = clean_conditions;
+                });
+            });
         });
-    });
+    }
+
+    $scope.$watch("token",renderHome);
     //Selection dialog
-    function SelectionDialogCtrl($scope,$mdDialog,category,currentGrade){
+    function SelectionDialogCtrl($scope,$mdDialog,category,currentGrade,semester,student){
+        var that = this;
         $scope.selectedCategory = category;
         currentGrade = currentGrade+"";
         this.loading = false;
@@ -129,19 +168,36 @@ function($scope,rest,$mdMedia,$mdDialog,NgTableParams){
             //console.log($scope.coursesTable);
         });
         this.selection = [];
+        this.selectRow = function(item){
+            item.selected = !item.selected;
+        };
         this.select = function(){
             //$scope.coursesTable
             for(var i=0; i<$scope.coursesTable.data.length;i++){
                 if($scope.coursesTable.data[i].selected){
-                    delete $scope.coursesTable.data[i].selected;
-                    this.selection.push($scope.coursesTable.data[i]);
+                    var data = {};
+                    data.semester_id = semester.id;
+                    data.course_code = $scope.coursesTable.data[i].code;
+                    data.student_number = student.student_number;
+                    this.selection.push(data);
                 }
             }
-            this.loading = true;
-            /*$mdDialog.hide({
-                category:category,
-                selection:this.selection
-            });*/
+            console.log(this.selection);
+            that.loading = true;
+            rest.course_selections.save(this.selection,function(){
+                $mdDialog.hide({
+                    selection:this.selection
+                });
+            },function(error){
+                that.loading = false;
+                if(error.data){
+                    that.error_msg = error.data.error;
+                }else{
+                    that.error_msg = "Error occured !"
+                }
+                that.selection = [];
+            });
+            /**/
         };
         this.cancel = function(){
             $mdDialog.cancel();
@@ -161,14 +217,14 @@ function($scope,rest,$mdMedia,$mdDialog,NgTableParams){
           clickOutsideToClose:false,
           locals:{
               category:category,
-              currentGrade:$scope.currentGrade
+              currentGrade:$scope.currentGrade,
+              semester:$scope.semester,
+              student:$scope.student,
           },
           fullscreen: useFullScreen
         })
         .then(function(selections) {
-            /*for(var i=0;i<selections;i++){
-                $scope.courseSelection.push(selections[i]);
-            }*/
+            renderHome();
             $scope.selectionCategory = {};
         },function(){
             $scope.selectionCategory = {};
@@ -177,6 +233,13 @@ function($scope,rest,$mdMedia,$mdDialog,NgTableParams){
             return $mdMedia('xs') || $mdMedia('sm');
         }, function(wantsFullScreen) {
             $scope.customFullscreen = (wantsFullScreen === true);
+        });
+    };
+    $scope.removeSelection = function(selection){
+        rest.course_selections.remove({},selection,function(){
+            renderHome();
+        },function(){
+            alert("Remove failed!");
         });
     };
 }]);
