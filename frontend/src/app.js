@@ -6,7 +6,8 @@ var schooloffice = angular.module('school-office',
 		'ngMaterial',
 		'ngRoute',
 		"ngTable",
-		"ngResource"
+		"ngResource",
+		"dndLists"
 	]);
 
 
@@ -25,6 +26,10 @@ schooloffice.config(function($routeProvider) {
       controller:'AdminStudentController',
       templateUrl:'templates/admin/adminStudent.html',
     })
+	.when('/adminStudent/:action/', {
+      controller:'AdminStudentDetailController',
+      templateUrl:'templates/admin/adminStudentDetail.html',
+    })
 	.when('/adminStudent/:action/:studentNumber', {
       controller:'AdminStudentDetailController',
       templateUrl:'templates/admin/adminStudentDetail.html',
@@ -36,6 +41,10 @@ schooloffice.config(function($routeProvider) {
 	.when('/adminSemesters', {
       controller:'AdminSemesterController',
       templateUrl:'templates/admin/adminSemester.html',
+    })
+	.when('/adminSemesters/schedule/:semester', {
+      controller:'AdminSemesterScheduleController',
+      templateUrl:'templates/admin/adminSemesterSchedule.html',
     })
 
 	//Studnets

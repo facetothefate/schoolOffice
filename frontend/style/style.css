@@ -77,3 +77,18 @@ md-card md-card-title{
 	margin: 0;
 	margin-bottom: 0px;
 }
+.so-course-schedule-table{
+	text-align: left;
+	height: 100%;
+	width: 100%;
+}
+.so-course-schedule-table tbody tr td{
+	text-align: left;
+}
+.so-course-schedule-table .so-weekday-header{
+	width: 15%;
+	border-right: 1px solid black;
+}
+.so-course-schedule-table .so-weekday-body{
+	width: 85%;
+}

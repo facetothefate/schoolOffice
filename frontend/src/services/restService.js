@@ -1,6 +1,11 @@
 angular.module('school-office').factory('RestService',function($resource){
     return {
-        'students':$resource('../api/students/:id',{id:'@id'}),
+        'students':$resource('../api/students/:id',{id:'@id'},{
+            'save':{
+                url:'../api/admin/students',
+                method:"POST",
+            }
+        }),
         'student_username':$resource('../api/students/user/:username',{username:"@username"}),
         'courses':$resource('../api/courses/:id',{id:'@id'}),
         'courses_category':$resource('../api/courses/category/:id',{id:'@id'}),
@@ -9,10 +14,6 @@ angular.module('school-office').factory('RestService',function($resource){
                 isArray:true,
                 method:"GET",
             },
-            /*'save':{
-                url:"../api/course-selections/",
-                method:"POST"
-            }*/
             'remove':{
                 url:"../api/course-selections/student/:studentNumber/semester/:semester/code/:code",
                 method:"DELETE",
@@ -20,6 +21,32 @@ angular.module('school-office').factory('RestService',function($resource){
                     studentNumber:"@student_number",
                     semester:"@semester_id",
                     code:"@code"
+                }
+            },
+            'semester_unscheduled_summary':{
+                url:"../api/course-selections/semester/:semester/unscheduled/summary",
+                method:"GET",
+                params:{
+                    semester:"@semester_id"
+                },
+                isArray:true,
+            }
+        }),
+        'courses_schedule':$resource('../api/course-schedule/semester/:semester',{semester:"@semester_id"},{
+            'get_by_weekday':{
+                url:'../api/course-schedule/semester/:semester/schedule/:repeat_day',
+                method:"GET",
+                params:{
+                    semester:"@semester_id",
+                    repreat_day:"@repeat_day"
+                },
+                isArray:true,
+            },
+            'save':{
+                url:'../api/admin/course-schedule/semester/:semester/',
+                method:"POST",
+                params:{
+                    semester:"@semester_id"
                 }
             }
         }),

@@ -1,0 +1,92 @@
+<md-content  layout-xs="row" layout="row"  ng-cloak>
+	<div flex=30 style="height:100%">
+        <div layout="column">
+            <md-card class="school-office-main-card" style="position:fixed">
+        		<md-card-title>
+        		    <md-card-title-text>
+        		        <span class="md-headline">Unscheduled course</span><br>
+        		    </md-card-title-text>
+        			<md-card-title-media>
+        				<div class="md-media-sm card-media">
+        					<md-icon md-font-icon="material-icons"> schedule</md-icon>
+        				</div>
+        			</md-card-title-media>
+            	</md-card-title>
+        		<md-card-content>
+                        <ul  dnd-list="unscheduled">
+                            <li ng-repeat="item in unscheduled"
+                                dnd-draggable="item"
+                                dnd-effect-allowed="move"
+                                dnd-moved="unscheduled.splice($index, 1)"
+                                draggable="true">
+                                <span>
+                                    {{item.name}}({{item.total_selections}})
+                                </span>
+                                <span>
+                                    <md-button>Reject</md-button>
+                                </span>
+                            </li>
+                        </ul>
+        		</md-card-content>
+        	</md-card>
+        </div>
+	</div>
+    <div flex=70 style="height:100%">
+        <form ng-submit="save()">
+            <table class="mdl-data-table so-course-schedule-table">
+                <tbody>
+                    <tr ng-repeat="day in scheduled">
+                        <td class="so-weekday-header">
+                            <h4>{{weekday[$index]}}</h4>
+                        </td>
+                        <td class="so-weekday-body">
+                            <ul dnd-list="day">
+                                <li ng-repeat="schedule_item in day" layout=row>
+                                    <span flex="30">{{schedule_item.name}}</span>
+                                    <span flex="50" layout="row">
+                                        <md-input-container flex="12" class="md-block">
+                                            <label>
+                                                Start hour
+                                            </label>
+                                            <input type="number" min="0" max="23" ng-model="schedule_item.start_hour" required>
+                                        </md-input-container>
+                                        <md-input-container flex="12" class="md-block">
+                                            <label>
+                                                Start minute
+                                            </label>
+                                            <input type="number" min="0" max="59" ng-model="schedule_item.start_minute" required>
+                                        </md-input-container>
+                                        <md-input-container flex="12" class="md-block">
+                                            <label>
+                                                End hour
+                                            </label>
+                                            <input type="number" min="0" max="23" ng-model="schedule_item.end_hour" required>
+                                        </md-input-container>
+                                        <md-input-container flex="12" class="md-block">
+                                            <label>
+                                                End minute
+                                            </label>
+                                            <input type="number" min="0" max="59" ng-model="schedule_item.end_minute" required>
+                                        </md-input-container>
+                                    </span>
+                                    <span flex="20" layout="row">
+                                        <md-button ng-click="cancel(day,schedule_item,$index)">Cancel</md-button>
+                                    </span>
+                                <li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="position:fixed;bottom:0;right:0">
+                <md-button type="submit" class="md-raised md-primary">
+                    <div layout="row" ng-if="loading">
+                        <md-progress-circular style="margin:8px;" ng-disabled="!loading" class="md-hue-2" md-diameter="20px"></md-progress-circular>
+                        Saving...
+                    </div>
+                    <span ng-if="!loading">Save</span>
+                </md-button>
+            </div>
+        </form>
+    </div>
+</md-content>
