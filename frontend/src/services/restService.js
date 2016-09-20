@@ -50,7 +50,31 @@ angular.module('school-office').factory('RestService',function($resource){
                 }
             }
         }),
-        'semesters':$resource('../api/semesters/:id',{id:'@id'}),
+        'semesters':$resource('../api/semesters/:id',{id:'@id'},{
+            'save':{
+                url:'../api/admin/semesters',
+                method:"POST"
+            },
+            'update':{
+                url:'../api/admin/semesters',
+                method:"PUT",
+                params:{}
+            },
+            'open_register':{
+                url:'../api/admin/semesters/:id/open',
+                method:'put',
+                params:{
+                    id:"@id",
+                }
+            },
+            'close_register':{
+                url:'../api/admin/semesters/:id/close',
+                method:'put',
+                params:{
+                    id:"@id",
+                }
+            }
+        }),
         'semesters_open':$resource('../api/semester/open',{}),
         'conditions':$resource('../api/conditions/:diploma',{diploma:'@so_diplomas_id'},{
             'get':{

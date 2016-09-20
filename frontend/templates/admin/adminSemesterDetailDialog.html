@@ -1,0 +1,53 @@
+<md-dialog aria-label="Create/update a new Semester"  ng-cloak>
+    <form ng-submit="ctrl.submit()">
+        <md-toolbar>
+            <div class="md-toolbar-tools mdl-color--blue-grey-800">
+                <h2><span ng-if="!ctrl.update">Create</span><span ng-if="ctrl.update">Update</span> a semester</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+                    <md-icon md-font-icon="material-icons">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content class="loading-container">
+            <div class="md-dialog-content">
+                <div layout="row">
+                    <md-input-container flex class="md-block" flex-gt-sm>
+                        <label>Name</label>
+                        <input ng-model="semester.semester" required>
+                    </md-input-container>
+                </div>
+                <div layout="row">
+                    <md-input-container flex class="md-block" flex-gt-sm>
+                        <label>Start date</label>
+                        <md-datepicker ng-model="semester.start_date" required>
+                        </md-datepicker>
+                    </md-input-container>
+                    <md-input-container flex class="md-block" flex-gt-sm>
+                        <label>End date</label>
+                        <md-datepicker ng-model="semester.end_date" required>
+                        </md-datepicker>
+                    </md-input-container>
+                </div>
+            </div>
+            <div class="loading" ng-show="ctrl.loading" >
+                <div layout="row"  layout-align="space-around">
+                    <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                </div>
+                <div layout="column" layout-align="space-around" style="text-align:center">
+                    <br>
+                    <h4>Saving..</h4>
+                    <p>Please wait... Don't close this window</p>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button type="submit" ng-disabled="ctrl.loading">
+                Save
+            </md-button>
+            <md-button ng-click="ctrl.cancel()" ng-disabled="ctrl.loading">
+                Cancel
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

@@ -27,12 +27,26 @@
 				            {{semester.end}}
 				        </td>
 				        <td>
-				            <md-button class="md-raised" >Schedule exams</md-button>
-                            <md-button class="md-raised"  href="#/adminSemesters/schedule/{{semester.id}}">Schedule course</md-button>
+				            <!--<md-button class="md-raised" >Schedule exams</md-button>-->
+							<md-button class="md-raised" ng-href="#/adminSemesters/schedule/{{semester.id}}">Schedule course</md-button>
+							<md-button class="md-icon-button md-accent" ng-click="openUpdate(semester)">
+				        		<md-icon md-font-icon="material-icons">edit</md-icon>
+				        	</md-button>
 				        </td>
+						<td title="'Open for register?'">
+							<md-switch ng-model="semester.open_for_register" ng-click="openCloseRegister(semester)" aria-label="open_for_register">
+							</md-switch>
+						</td>
 				    </tr>
 				</table>
 			</p>
 		</md-card-content>
 	</md-card>
+	<div layout="row">
+		<div flex=25>
+			<md-button class="md-raised mdl-color--green-100" ng-click="openCreation()">
+				<md-icon md-font-icon="material-icons">add</md-icon>Add a new Semester
+			</md-button>
+		</div>
+	</div>
 </md-content>

@@ -744,7 +744,8 @@ $app->get('/api/semesters',function (Request $req, Response $res) {
                     `so_schedule`.`end`
                     FROM `so_semesters`
                     INNER JOIN `so_schedule`
-                    ON `so_semesters`.`so_schedule_id` = `so_schedule`.`id`"
+                    ON `so_semesters`.`so_schedule_id` = `so_schedule`.`id`
+                    ORDER BY `so_schedule`.`start` DESC"
             );
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -753,6 +754,78 @@ $app->get('/api/semesters',function (Request $req, Response $res) {
         $req,$res
     );
 });
+
+$app->post('/api/admin/semesters',function (Request $req, Response $res) {
+    return handelDb(
+        function($req,$res,$db){
+            $data = json_decode($req->getbody(),true);
+            $sth = $db->prepare(
+                "INSERT INTO `so_schedule` (
+                    `start`,
+                    `end`,
+                    `start_time`,
+                    `end_time`,
+                    `repeat_day`,
+                    `so_location_id`
+                )
+                VALUES (
+                    :start,
+                    :end,
+                    Null,
+                    Null,
+                    Null,
+                    '1'
+                )");
+            $sth->bindParam(':start', $data['start'], PDO::PARAM_STR);
+            $sth->bindParam(':end', $data['end'], PDO::PARAM_STR);
+            $ret = $sth->execute();
+            $scheduleId =$db->lastInsertId();
+            $sth = $db->prepare(
+                "INSERT INTO `so_semesters`
+                (`semester`, `open_for_register`, `so_schedule_id`)
+                VALUES ( :name,'FALSE',:scheduleId)"
+            );
+            $sth->bindParam(':name', $data['semester'], PDO::PARAM_STR);
+            $sth->bindParam(':scheduleId', $scheduleId, PDO::PARAM_INT);
+            $ret = $sth->execute();
+            return $res->withStatus(200);
+        },
+        $req,$res
+    );
+});
+
+$app->put('/api/admin/semesters',function (Request $req, Response $res) {
+    return handelDb(
+        function($req,$res,$db){
+            $data = json_decode($req->getbody(),true);
+            $data['id'] = (int)$data['id'];
+            $sth = $db->prepare(
+                "UPDATE `so_schedule`
+                    SET `start`=:start,
+                        `end`=:end
+                    WHERE
+                        `so_schedule`.`id` = (
+                            SELECT `so_semesters`.`so_schedule_id`
+                            FROM `so_semesters`
+                            WHERE
+                                `so_semesters`.`id` = :id
+                        );
+                UPDATE `so_semesters`
+                    SET `so_semesters`.`semester` = :name
+                    WHERE
+                        `so_semesters`.`id` = :id;
+                ");
+            $sth->bindParam(':id', $data['id'], PDO::PARAM_INT);
+            $sth->bindParam(':name', $data['semester'], PDO::PARAM_STR);
+            $sth->bindParam(':start', $data['start'], PDO::PARAM_STR);
+            $sth->bindParam(':end', $data['end'], PDO::PARAM_STR);
+            $ret = $sth->execute();
+            return $res->withStatus(200);
+        },
+        $req,$res
+    );
+});
+
 
 $app->get('/api/semesters/{semester}',function (Request $req, Response $res) {
     return handelDb(
@@ -803,10 +876,10 @@ $app->get('/api/semester/open',function (Request $req, Response $res) {
 });
 
 //make a semester open for register
-$app->post('/api/admin/semesters/{semester}/open',function (Request $req, Response $res) {
+$app->put('/api/admin/semesters/{semester}/open',function (Request $req, Response $res) {
     return handelDb(
         function($req,$res,$db){
-            $semester =  $req->getAttribute('semester');
+            $semester =  (int)$req->getAttribute('semester');
             //set all other to close
             $sth = $db->prepare(
                 "UPDATE `so_semesters`
@@ -817,7 +890,7 @@ $app->post('/api/admin/semesters/{semester}/open',function (Request $req, Respon
             //set this one to open
             $sth = $db->prepare(
                 "UPDATE `so_semesters`
-                    set `so_semesters`.`open_for_register` = 1,
+                    set `so_semesters`.`open_for_register` = 1
                     WHERE `so_semesters`.`id` = :semester"
             );
             $sth->bindParam(':semester', $semester, PDO::PARAM_INT);
@@ -829,13 +902,13 @@ $app->post('/api/admin/semesters/{semester}/open',function (Request $req, Respon
 });
 
 //make a semester close for register
-$app->post('/api/admin/semesters/{semester}/close',function (Request $req, Response $res) {
+$app->put('/api/admin/semesters/{semester}/close',function (Request $req, Response $res) {
     return handelDb(
         function($req,$res,$db){
-            $semester =  $req->getAttribute('semester');
+            $semester =  (int)$req->getAttribute('semester');
             $sth = $db->prepare(
                 "UPDATE `so_semesters`
-                    set `so_semesters`.`open_for_register` = 0,
+                    set `so_semesters`.`open_for_register` = 0
                     WHERE `so_semesters`.`id` = :semester"
             );
             $sth->bindParam(':semester', $semester, PDO::PARAM_INT);

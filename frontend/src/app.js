@@ -53,6 +53,11 @@ schooloffice.config(function($routeProvider) {
       templateUrl:'templates/student/studentHome.html',
     })
 
+	.when('/studentSchedule', {
+      controller:'StudentScheduleController',
+      templateUrl:'templates/student/studentSchedule.html',
+    })
+
 	//teachers
 	//system
     /*.when('/login', {

@@ -6,17 +6,12 @@
                     <h4>{{weekday[$index]}}</h4>
                 </td>
                 <td class="so-weekday-body">
-                    <ul dnd-list="day">
-                        <li ng-repeat="schedule_item in day" layout=row>
-                            <span flex="30">{{schedule_item.name}}</span>
-                            <span flex="50" layout="row">
-                                {{schedule_item.start_time}} - {{schedule_item.end_time}}
-                            </span>
-                            <span flex="20" layout="row">
-                                <md-button ng-click="cancel(day,schedule_item,$index)">Cancel</md-button>
-                            </span>
-                        <li>
-                    </ul>
+                    <p ng-repeat="schedule_item in day" layout=row>
+                        <span flex="50">{{schedule_item.name}}</span>
+                        <span flex="50" layout="row">
+                            {{schedule_item.start_time}} - {{schedule_item.end_time}}
+                        </span>
+                    </p>
                 </td>
             </tr>
         </tbody>

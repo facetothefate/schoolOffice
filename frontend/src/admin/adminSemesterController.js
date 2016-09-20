@@ -3,10 +3,129 @@ angular.module('school-office').controller('AdminSemesterController',
   "NgTableParams",
   "$scope",
   "RestService",
-function(NgTableParams,$scope,rest){
-    rest.semesters.query(function(semesters){
-        $scope.semestersTable = new NgTableParams({}, { dataset: semesters});
+  "DateService",
+  "$mdDialog",
+  "$mdMedia",
+function(NgTableParams,$scope,rest,date,$mdDialog,$mdMedia){
+    function render (){
+        rest.semesters.query(function(semesters){
+            for(var i=0; i< semesters.length; i++){
+                semesters[i].open_for_register = parseInt(semesters[i].open_for_register)==1;
+            }
+            $scope.semestersTable = new NgTableParams({}, { dataset: semesters});
+        });
+    }
+    render();
+    function semesterCreationDialogCtrl($scope,$mdDialog,semester,update){
+        var that = this;
+        this.original = {};
+        if(semester){
+            this.original.semester = semester.semester;
+            this.original.start = semester.start;
+            this.original.end = semester.end;
+
+            $scope.semester = semester;
+            $scope.semester.start_date = new Date(semester.start +" 00:00:00");
+            $scope.semester.end_date = new Date(semester.end +" 00:00:00");
+        }
+        this.update = update;
+        this.loading = false;
+        this.cancel = function(){
+            if(update){
+                semester.start = this.original.start;
+                semester.end =  this.original.end;
+                semester.semester = this.original.semester;
+            }
+            $mdDialog.cancel();
+        };
+        this.submit = function(){
+            that.loading = true;
+            $scope.semester.start = $scope.semester.start_date;
+            $scope.semester.end = $scope.semester.end_date;
+            if(that.update){
+                rest.semesters.update({},$scope.semester,function(){
+                    that.loading = false;
+                    $mdDialog.hide();
+                },function(error){
+                    that.loading = false;
+                    $scope.error = error.data.error;
+                });
+            }else{
+                rest.semesters.save({},$scope.semester,function(){
+                    that.loading = false;
+                    $mdDialog.hide();
+                },function(error){
+                    that.loading = false;
+                    $scope.error = error.data.error;
+                });
+            }
+        };
+    }
+    var useFullScreen = ($mdMedia('sm') || $mdMedia('xs')) && $scope.customFullscreen;
+    $scope.$watch(function() {
+        return $mdMedia('xs') || $mdMedia('sm');
+    }, function(wantsFullScreen) {
+        $scope.customFullscreen = (wantsFullScreen === true);
     });
+    $scope.openCreation = function(ev){
+        $mdDialog.show({
+            controller: semesterCreationDialogCtrl,
+            controllerAs:"ctrl",
+            templateUrl: 'templates/admin/adminSemesterDetailDialog.html?v='+Math.random(),
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose:true,
+            fullscreen: useFullScreen,
+            locals:{
+                semester:null,
+                update:false,
+            }
+        })
+        .then(function(selections) {
+            render();
+        },function(){
+        });
+
+    };
+    $scope.openUpdate = function(semester,ev){
+        $mdDialog.show({
+          controller: semesterCreationDialogCtrl,
+          controllerAs:"ctrl",
+          templateUrl: 'templates/admin/adminSemesterDetailDialog.html?v='+Math.random(),
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose:true,
+          fullscreen: useFullScreen,
+          locals:{
+            semester:semester,
+            update:true,
+          }
+        })
+        .then(function() {
+            render();
+        },function(){
+        });
+    };
+    $scope.openCloseRegister = function(semester){
+        if(semester.open_for_register){
+            rest.semesters.close_register({id:semester.id},function(){
+                semester.open_for_register = false;
+            },function(){
+                semester.open_for_register = true;
+            });
+        }else{
+            rest.semesters.open_register({id:semester.id},function(){
+                for(var i=0; i< $scope.semestersTable.data.length; i++){
+                    if($scope.semestersTable.data[i].id!=semester.id){
+                        $scope.semestersTable.data[i].open_for_register = false;
+                    }
+                }
+                semester.open_for_register = true;
+            },function(){
+                semester.open_for_register = false;
+            });
+        }
+    };
 }]);
 
 angular.module('school-office').controller('AdminSemesterScheduleController',
