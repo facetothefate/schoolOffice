@@ -24,7 +24,7 @@ angular.module('school-office').factory('AuthService',function($http,$q,$window)
 angular.module('school-office').factory('AuthHttpInterceptor',function($q,$injector,$window){
     return {
         'request':function(req){
-            var token = $window.sessionStorage.getItem('token');
+            var token = JSON.parse($window.sessionStorage.getItem('token'));
             if(token){
                 req.headers['Token-Authorization-X'] = token.token;
             }

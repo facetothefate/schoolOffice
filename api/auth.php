@@ -5,36 +5,78 @@ use Slim\Middleware\TokenAuthentication\UnauthorizedExceptionInterface;
 class UnauthorizedException extends \Exception implements UnauthorizedExceptionInterface{}
 class InvaildUsernamePasswordException extends \Exception {}
 class TokenAuth{
-
-    public function verifyToken($res,$token){
-        if(!$token){
-            throw new UnauthorizedException('Unauthorized Access');
-        }
+    private function getUserFromToken($token){
         $db = getDB();
         $sth = $db->prepare("SELECT * FROM `so_users` WHERE `token`=:token");
         $sth->bindParam(':token',$token, PDO::PARAM_STR);
         $ret = $sth->execute();
         $users = $sth->fetchAll(PDO::FETCH_ASSOC);
         if($users&&sizeof($users)==1){
-            if(MD5($users[0]['username'])==substr($token,0,32)&&strtotime($users['token_expire'])>strtotime(time())){
-                if(strpos("/api/admin",$res.getResourceUri())===0&&intval($users['role'])!==3){
-                    throw new UnauthorizedException('Unauthorized Access');
-                }
-                $update_sth = $db->prepare(
-                    "UPDATE `so_users`
-                        SET
-                            `token_expire` = :token_expire
-                        WHERE `so_users`.`id` = :user_id;"
-                );
-                //Get more time for this token
-                $update_sth->bindParam('token_expire',date('Y-m-d H:i:s', strtotime('+1 hour')),PDO::PARAM_STR);
-                $update_sth->execute();
-            }else{
-                throw new UnauthorizedException('Unauthorized Access');
-            }
+            return $users[0];
         }else{
             throw new UnauthorizedException('Unauthorized Access');
         }
+    }
+    public function verifyToken($req,$token){
+        if(!$token){
+            throw new UnauthorizedException('Unauthorized Access');
+        }
+        $user = $this->getUserFromToken($token);
+        if(MD5($user['username'])==substr($token,0,32)&&strtotime($user['token_expire'])>strtotime(time())){
+            if(strpos("/api/admin",$req->getUri()->getPath())!==FALSE&&intval($user['role'])!==3){
+                throw new UnauthorizedException('Unauthorized Access');
+            }
+            if(intval($user['role'])==1&&!$req->isGet()){
+                /*$data = $req->getBody()->write(json_encode($data));
+                if(!$data['student_number']){
+                    throw new UnauthorizedException('Unauthorized Access');
+                }else{
+                    $sth = $db->prepare("SELECT  FROM `` WHERE `student_number`=:studentNumber");
+                    $sth->bindParam(':token',$token, PDO::PARAM_STR);
+                }*/
+            }
+            $db = getDB();
+            $update_sth = $db->prepare(
+                "UPDATE `so_users`
+                    SET
+                        `token_expire` = :tokenExpire
+                    WHERE `so_users`.`id` = :userId;"
+            );
+            //Get more time for this token
+            $update_sth->bindParam('tokenExpire',date('Y-m-d H:i:s', strtotime('+1 hour')),PDO::PARAM_STR);
+            $update_sth->bindParam('userId',intval($user['id']),PDO::PARAM_INT);
+            $update_sth->execute();
+        }else{
+            throw new UnauthorizedException('Unauthorized Access');
+        }
+    }
+
+    public function verifyStudentNumber($studentNumber,$token){
+        $user = $this->getUserFromToken($token);
+        if(intval($user['role'])==1){
+            $db = getDB();
+            $sth = $db->prepare("SELECT * FROM `so_students` WHERE `so_students`.`so_users_id`=:userId");
+            $sth->bindParam(':userId',intval($user['id']), PDO::PARAM_INT);
+            $ret = $sth->execute();
+            $student = $sth->fetch(PDO::FETCH_ASSOC);
+            return intval($studentNumber)==intval($student['student_number']);
+        }else if(intval($user['role'])==2){
+            //todo teacher's auth
+            return false;
+        }else if(intval($user['role'])==3){
+            //admin can do anything about a student
+            return true;
+        }else{
+            throw new UnauthorizedException('Unauthorized Access');
+        }
+    }
+
+    public function verifyUserId($userId,$token){
+        $user = $this->getUserFromToken($token);
+        if(intval($user['role'])==3){
+            return true;
+        }
+        return $userId == $user['id'];
     }
 
     public function getToken($username,$password){

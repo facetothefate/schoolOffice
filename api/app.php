@@ -1,8 +1,9 @@
 <?php
+require_once "vendor/autoload.php";
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use Slim\Middleware\TokenAuthentication;
 
-require_once "vendor/autoload.php";
 require_once "db.php";
 require_once "auth.php";
 function is_assoc($array) {
@@ -21,37 +22,6 @@ function handelPDOException($e,$res){
     ));
     return $res;
 }
-function sendJsonArray($res,$data){
-    if($data){
-        $res = $res->withStatus(200)->withHeader('Content-type', 'application/json');
-        $res->getBody()->write(json_encode($data));
-        return $res;
-    }else{
-        $res = $res->withStatus(200)->withHeader('Content-type', 'application/json');
-        $res->getBody()->write(json_encode([]));
-        return $res;
-    }
-}
-function sendJsonObject($res,$data){
-    if($data){
-        $res = $res->withStatus(200)->withHeader('Content-type', 'application/json');
-        $res->getBody()->write(json_encode($data));
-        return $res;
-    }else{
-        $res = $res->withStatus(404)->withHeader('Content-type', 'application/json');
-        return $res;
-    }
-}
-function sendJson($res,$code,$data){
-    if($data){
-        $res = $res->withStatus($code)->withHeader('Content-type', 'application/json');
-        $res->getBody()->write(json_encode($data));
-        return $res;
-    }else{
-        $res = $res->withStatus($code)->withHeader('Content-type', 'application/json');
-        return $res;
-    }
-}
 
 function handelDb($callback,$req,$res){
     try{
@@ -69,11 +39,24 @@ $authenticator = function($request, TokenAuthentication $tokenAuth){
     $token = $tokenAuth->findToken($request);
     $auth = new TokenAuth();
     $auth->verifyToken($request,$token);
+    //$request['token_auth'] = $auth;
 };
 
 
 //application configuration
 $app = new \Slim\App;
+
+//Config auth
+
+$app->add(new TokenAuthentication([
+    'path' =>   '/api',
+    'passthrough' => '/api/user/login',
+    'header' => $config['auth-header'],
+    'regex' => '/(.*)$/i', //our own token type
+    'authenticator' => $authenticator,
+    'secure' => $config['https'],
+    //'relaxed' => 'localhost'
+]));
 
 
 /********************************
@@ -97,7 +80,7 @@ $app->post('/api/user/login',function(Request $req, Response $res){
     try{
         $tokenData = $auth->getToken($json['username'],$json['password']);
         if($tokenData){
-            return sendJsonObject($res,$tokenData);
+            return $res->withJson($tokenData);
         }else{
             $res = $res->withStatus(400)->withHeader('Content-type', 'application/json');
             $res->getBody()->write(json_encode([
@@ -139,7 +122,7 @@ $app->get('/api/course_categories',function (Request $req, Response $res) {
             $sth = $db->prepare("SELECT * FROM `so_course_categories`");
             $ret = $sth->execute();
             $categories = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$categories);
+            return $res->withJson($categories);
         },
         $req,$res
     );
@@ -179,7 +162,7 @@ $app->get('/api/students',function (Request $req, Response $res) {
             );
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -218,7 +201,7 @@ $app->get('/api/students/{student_number}',function (Request $req, Response $res
             $sth->bindParam(':student_number', $student_number, PDO::PARAM_STR);
             $ret = $sth->execute();
             $resData = $sth->fetch(PDO::FETCH_ASSOC);
-            return sendJsonObject($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -257,7 +240,7 @@ $app->get('/api/students/user/{username}',function (Request $req, Response $res)
             $sth->bindParam(':username', $username, PDO::PARAM_STR);
             $ret = $sth->execute();
             $resData = $sth->fetch(PDO::FETCH_ASSOC);
-            return sendJsonObject($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -382,6 +365,24 @@ $app->post('/api/admin/students',function(Request $req, Response $res){
     );
 });
 
+$app->put('/api/students',function(Request $req, Response $res){
+    return handelDb(
+        function($req,$res,$db){
+
+        },
+        $req,$res
+    );
+});
+
+$app->put('/api/admin/students',function(Request $req, Response $res){
+    return handelDb(
+        function($req,$res,$db){
+
+        },
+        $req,$res
+    );
+});
+
 /************************************
 *   course API
 *************************************/
@@ -404,7 +405,7 @@ $app->get('/api/courses',function (Request $req, Response $res) {
             );
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -431,7 +432,7 @@ $app->get('/api/courses/category/{category}',function (Request $req, Response $r
             $sth->bindParam(':category', $category, PDO::PARAM_INT);
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -464,7 +465,7 @@ $app->get('/api/course-selections/{studentNumber}',function (Request $req, Respo
             $sth->bindParam(':studentNumber', $studentNumber, PDO::PARAM_INT);
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -488,7 +489,7 @@ $app->get('/api/course-selections/semester/{semesterId}/unscheduled/summary',fun
             $sth->bindParam(':semesterId', $semesterId, PDO::PARAM_INT);
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -517,6 +518,8 @@ $app->put('/api/admin/course-selections/semester/{semesterId}/reject/course/{cod
 $app->post('/api/course-selections',function (Request $req, Response $res) {
     return handelDb(
         function($req,$res,$db){
+            $token = $req->getHeader($config['auth-header']);
+            $auth = new TokenAuth();
             $data = json_decode($req->getbody(),true);
             if(!$data){
                 return $res->withStatus(405);
@@ -532,6 +535,9 @@ $app->post('/api/course-selections',function (Request $req, Response $res) {
                         AND   so_semesters_id=:semesterId
                         AND   so_courses_course_code=:courseCode"
                 );
+                if(!$auth->verifyStudentNumber($item['student_number'],$token)){
+                    return $res->withStatus(401);
+                }
                 $sth->bindParam(':studentNumber', $item['student_number'], PDO::PARAM_INT);
                 $sth->bindParam(':semesterId', $item['semester_id'], PDO::PARAM_INT);
                 $sth->bindParam(':courseCode', $item['course_code'], PDO::PARAM_STR);
@@ -633,7 +639,7 @@ $app->get('/api/course-schedule/semester/{semesterId}/schedule/{weekday}',functi
             $sth->bindParam(':semesterId', $semester, PDO::PARAM_INT);
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -749,7 +755,7 @@ $app->get('/api/semesters',function (Request $req, Response $res) {
             );
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -846,7 +852,7 @@ $app->get('/api/semesters/{semester}',function (Request $req, Response $res) {
             $sth->bindParam(':semester', $semester, PDO::PARAM_INT);
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonObject($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -869,7 +875,7 @@ $app->get('/api/semester/open',function (Request $req, Response $res) {
             );
             $ret = $sth->execute();
             $resData = $sth->fetch(PDO::FETCH_ASSOC);
-            return sendJsonObject($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
@@ -942,7 +948,7 @@ $app->get('/api/conditions/{diploma}',function (Request $req, Response $res) {
             $sth->bindParam(':diploma', $diploma, PDO::PARAM_INT);
             $ret = $sth->execute();
             $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
-            return sendJsonArray($res,$resData);
+            return $res->withJson($resData);
         },
         $req,$res
     );
