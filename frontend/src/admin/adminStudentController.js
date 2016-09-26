@@ -45,6 +45,9 @@ function(NgTableParams,$scope,$location,$mdDialog,$routeParams,rest){
             });
         });
         $scope.edit = true;
+        $scope.submit=function(){
+            alert("Not supported yet");
+        };
     }else{
         $scope.edit = false;
         $scope.student={
@@ -60,8 +63,8 @@ function(NgTableParams,$scope,$location,$mdDialog,$routeParams,rest){
             for(var key in $scope.student){
                 student[key]=$scope.student[key];
             }
-            student.enter_date = getMysqlFormatDate($scope.student.enter_date);
-            student.birthday = getMysqlFormatDate($scope.student.birthday);
+            student.enter_date = $scope.student.enter_date;
+            student.birthday = $scope.student.birthday;
             rest.students.save({},student,function(){
                 $scope.loading = false;
                 $location.path('/adminStudents');
