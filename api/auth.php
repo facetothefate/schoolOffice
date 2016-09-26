@@ -106,7 +106,7 @@ class TokenAuth{
         }
         $token_data = [];
         $db = getDB();
-        $sth = $db->prepare("SELECT * FROM `so_users` WHERE `username`=:username AND `password`=:password");
+        $sth = $db->prepare("SELECT * FROM `so_users` WHERE `username`=:username AND `password`=MD5(:password)");
         $sth->bindParam(':username', $username, PDO::PARAM_STR);
         $sth->bindParam(':password', $password, PDO::PARAM_STR);
         $ret = $sth->execute();

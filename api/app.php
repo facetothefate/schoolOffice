@@ -242,33 +242,17 @@ $app->get('/api/students/user/{username}',function (Request $req, Response $res)
 });
 $app->post('/api/admin/students',function(Request $req, Response $res){
     return handelDb(
-        function($req,$res,$db){
+        function($req,$res,$db,$config){
             $data = json_decode($req->getbody(),true);
             if(!array_key_exists('homeroom',$data)){
                 $data['homeroom']=2;
             }
-            $sth = $db->prepare(
-                "SELECT MAX(`id`)+1 as userId FROM so_users"
-            );
-            $res = $sth->execute();
-            $userId = $sth->fetchColumn();
-            /*
-            *   Student Id format
-            *   1 16 00001
-            *   | |    |________________________
-            *   | |____________                |
-            *   |student role | register year  | user id
-            */
-            $studentId = '1'.date("y").substr(100000+$userId%100000,1,5);
+
             $data['username'] = $studentId;
-            //Fix-me
-            //Default passwd same as username;
-            //Generage a random one and send an email out.
-            $data['password'] = $studentId;
+            $data['password'] = generatePassword();
 
             $sth = $db->prepare(
                 "INSERT INTO `so_users`(
-                        `id`,
                         `username`,
                         `password`,
                         `email`,
@@ -284,9 +268,8 @@ $app->post('/api/admin/students',function(Request $req, Response $res){
                         `role`
                     )
                      VALUES (
-                        :user_id,
                         :username,
-                        :password,
+                        MD5(:password),
                         :email,
                         :firstname,
                         :lastname,
@@ -300,7 +283,6 @@ $app->post('/api/admin/students',function(Request $req, Response $res){
                         '1'
                     )"
             );
-            $sth->bindParam(':user_id',$userId,PDO::PARAM_INT);
             $sth->bindParam(':username',$data['username'],PDO::PARAM_STR);
             $sth->bindParam(':password',$data['password'],PDO::PARAM_STR);
             $sth->bindParam(':email',$data['email'],PDO::PARAM_STR);
@@ -315,6 +297,25 @@ $app->post('/api/admin/students',function(Request $req, Response $res){
             $sth->bindParam(':telephone',$data['telephone'],PDO::PARAM_STR);
             $ret = $sth->execute();
             $rowCountUser = $sth->rowCount();
+            $userId = $db->lastInsertId();
+            /*
+            *   Student Id format
+            *   1 16 00001
+            *   | |    |________________________
+            *   | |____________                |
+            *   |student role | register year  | user id
+            */
+            $studentId = '1'.date("y").substr(100000+$userId%100000,1,5);
+
+            $data['username'] = $studentId;
+            $sth = $db->prepare(
+                "UPDATE so_users
+                    SET username = :username
+                    WHERE id = :userId"
+            );
+            $sth->bindParam(':userId',$userId,PDO::PARAM_STR);
+            $sth->bindParam(':username',$data['username'],PDO::PARAM_STR);
+            $sth->execute();
 
             $sth = $db->prepare(
                 "INSERT INTO
@@ -351,6 +352,11 @@ $app->post('/api/admin/students',function(Request $req, Response $res){
             $sth->execute();
             $rowCountStudent = $sth->rowCount();
             if($rowCountUser && $rowCountStudent){
+                $subject = "Your student account password";
+                $message = "Hi, your student account have been created, here is your password:"+$data['password'];
+                $from = $conifg['site-email'];
+                $headers = "From: $from";
+                mail($data['email'],$subject,$message,$headers);
                 return $res->withStatus(200);
             } else {
                 return $res->withStatus(300);

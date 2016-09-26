@@ -64,7 +64,7 @@ function(NgTableParams,$scope,$location,$mdDialog,$routeParams,rest){
             student.birthday = getMysqlFormatDate($scope.student.birthday);
             rest.students.save({},student,function(){
                 $scope.loading = false;
-                $location.path('#/adminStudents');
+                $location.path('/adminStudents');
             },function(errorData){
                 $scope.loading = false;
                 $mdDialog.show(
