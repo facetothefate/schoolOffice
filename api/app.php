@@ -451,6 +451,7 @@ $app->get('/api/course-selections/{studentNumber}',function (Request $req, Respo
                     `so_courses`.name,
                     `so_courses`.credit,
                     `so_courses`.grade,
+                    `so_courses`.prerequisite,
                     `so_courses`.`so_course_categories_id` AS 'category_id',
                     `so_semesters`.`id` AS 'semester_id',
                     `so_semesters`.`semester`,

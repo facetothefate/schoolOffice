@@ -28,6 +28,9 @@
                             <td title="'Credit'" filter="{ credit: 'number'}" sortable="'credit'">
                                 {{course.credit}}
                             </td>
+                            <td title="'Prerequisite'">
+                                {{course.prerequisite}}
+                            </td>
                             <td>
                                 <md-checkbox ng-modle="course.selected" ng-click="ctrl.selectRow(course)">
                                     Select
