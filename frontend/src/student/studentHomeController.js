@@ -154,7 +154,11 @@ function($scope,rest,color,$mdMedia,$mdDialog,NgTableParams){
         });
     }
 
-    $scope.$watch("token",renderHome);
+    //$scope.$watch("token",renderHome);
+    $scope.$on("login-success",function(e,token){
+		$scope.token = token;
+        renderHome();
+	});
     //Selection dialog
     function SelectionDialogCtrl($scope,$mdDialog,category,currentGrade,semester,student){
         var that = this;
@@ -248,4 +252,5 @@ function($scope,rest,color,$mdMedia,$mdDialog,NgTableParams){
             alert("Remove failed!");
         });
     };
+    renderHome();
 }]);
