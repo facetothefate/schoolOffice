@@ -64,33 +64,32 @@ function($scope,rest,color,$mdMedia,$mdDialog,NgTableParams){
         }
         rest.student_username.get({username:$scope.token.username},function(student){
             $scope.student = student;
-            var enterDate = new Date(student.enter_date);
-            var enterYear = enterDate.getFullYear();
-            var enterMonth = enterDate.getMonth()+1;
-            var enterGrade = parseInt(student.enter_grade);
-            var currentGrade = enterGrade;
-            var currentDate = new Date();
-            var currentYear = currentDate.getFullYear();
-            var currentMonth = currentDate.getMonth()+1;
-            if(enterYear == currentYear){
-                if(enterMonth<9&&currentMonth>=9){
-                    currentGrade ++;
-                }
-            }else if(enterYear < currentYear){
-                if(enterMonth<9){
-                    currentGrade ++;
-                }
-                if(currentMonth>=9){
-                    currentGrade ++;
-                }
-                if(currentYear - enterYear>1){
-                    currentGrade += currentYear - enterYear;
-                }
-            }
-            $scope.currentGrade = currentGrade;
-
             rest.semesters_open.get({},function(semester){
                 $scope.semester = semester;
+                var enterDate = new Date(student.enter_date);
+                var enterYear = enterDate.getFullYear();
+                var enterMonth = enterDate.getMonth()+1;
+                var enterGrade = parseInt(student.enter_grade);
+                var currentGrade = enterGrade;
+                var currentDate = new Date(semester.start+' 00:00:00');
+                var currentYear = currentDate.getFullYear();
+                var currentMonth = currentDate.getMonth()+1;
+                if(enterYear == currentYear){
+                    if(enterMonth<9&&currentMonth>=9){
+                        currentGrade ++;
+                    }
+                }else if(enterYear < currentYear){
+                    if(enterMonth<9){
+                        currentGrade ++;
+                    }
+                    if(currentMonth>=9){
+                        currentGrade ++;
+                    }
+                    if(currentYear - enterYear>1){
+                        currentGrade += currentYear - enterYear;
+                    }
+                }
+                $scope.currentGrade = currentGrade;
             });
             //then get all the conditons
             rest.conditions.get({diploma:1},function(conditions){

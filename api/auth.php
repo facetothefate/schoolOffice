@@ -1,5 +1,6 @@
 <?php
 require_once('db.php');
+require_once('utils.php');
 use Slim\Middleware\TokenAuthentication\UnauthorizedExceptionInterface;
 
 class UnauthorizedException extends \Exception implements UnauthorizedExceptionInterface{}
@@ -11,10 +12,13 @@ class TokenAuth{
         $sth->bindParam(':token',$token, PDO::PARAM_STR);
         $ret = $sth->execute();
         $users = $sth->fetchAll(PDO::FETCH_ASSOC);
-        if($users&&sizeof($users)==1){
+        //print_r($users);
+        //print_r(count($users));
+        if(count($users)==1){
+            //print_r(count($users));
             return $users[0];
         }else{
-            throw new UnauthorizedException('Unauthorized Access');
+            throw new UnauthorizedException('Unauthorized Access, Invalid token');
         }
     }
     public function verifyToken($req,$token){
@@ -26,14 +30,23 @@ class TokenAuth{
             if(strpos("/api/admin",$req->getUri()->getPath())!==FALSE&&intval($user['role'])!==3){
                 throw new UnauthorizedException('Unauthorized Access');
             }
-            if(intval($user['role'])==1&&!$req->isGet()){
-                /*$data = $req->getBody()->write(json_encode($data));
-                if(!$data['student_number']){
-                    throw new UnauthorizedException('Unauthorized Access');
+            if(intval($user['role'])==1){
+                //if user is a student, check if he have rights to access resources
+                if(!$req->isGet()&&!$req->isDelete()){
+                    $data = json_decode($req->getbody(),true);
+                    if(is_assoc($data)){
+                        $this->verifyStudentNumber($data['student_number'],$token,$user);
+                    }else{
+                        foreach($data as $item){
+                            $this->verifyStudentNumber($item['student_number'],$token,$user);
+                        }
+                    }
                 }else{
-                    $sth = $db->prepare("SELECT  FROM `` WHERE `student_number`=:studentNumber");
-                    $sth->bindParam(':token',$token, PDO::PARAM_STR);
-                }*/
+                    $studentNumber =  (int)$req->getAttribute('studentNumber');
+                    if($studentNumber){
+                        $this->verifyStudentNumber($studentNumber,$token,$user);
+                    }
+                }
             }
             $db = getDB();
             $update_sth = $db->prepare(
@@ -47,27 +60,35 @@ class TokenAuth{
             $update_sth->bindParam('userId',intval($user['id']),PDO::PARAM_INT);
             $update_sth->execute();
         }else{
-            throw new UnauthorizedException('Unauthorized Access');
+            throw new UnauthorizedException('Unauthorized Access, Invalid token (time expired, please login agian)');
         }
     }
 
-    public function verifyStudentNumber($studentNumber,$token){
-        $user = $this->getUserFromToken($token);
+    public function verifyStudentNumber($studentNumber,$token,$user){
+        if(!$token){
+            throw new UnauthorizedException('Cannot find token');
+        }
+        if(!$user){
+            $user = $this->getUserFromToken($token);
+        }
         if(intval($user['role'])==1){
             $db = getDB();
             $sth = $db->prepare("SELECT * FROM `so_students` WHERE `so_students`.`so_users_id`=:userId");
             $sth->bindParam(':userId',intval($user['id']), PDO::PARAM_INT);
             $ret = $sth->execute();
             $student = $sth->fetch(PDO::FETCH_ASSOC);
-            return intval($studentNumber)==intval($student['student_number']);
+            if(intval($studentNumber)!=intval($student['student_number'])){
+                throw new UnauthorizedException('Unauthorized Access other student information:'.$studentNumber);
+            }
+            return true;
         }else if(intval($user['role'])==2){
             //todo teacher's auth
-            return false;
+            throw new UnauthorizedException('Do not support teacher features for now, Your role:'.$user['role']);
         }else if(intval($user['role'])==3){
             //admin can do anything about a student
             return true;
         }else{
-            throw new UnauthorizedException('Unauthorized Access');
+            throw new UnauthorizedException('Unauthorized Access, Your role:'.$user['role']);
         }
     }
 

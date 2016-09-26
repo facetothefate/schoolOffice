@@ -6,13 +6,7 @@ use Slim\Middleware\TokenAuthentication;
 
 require_once "db.php";
 require_once "auth.php";
-function is_assoc($array) {
-    if(is_array($array)) {
-        $keys = array_keys($array);
-        return $keys != array_keys($keys);
-    }
-    return false;
-}
+require_once "utils.php";
 function handelPDOException($e,$res){
     $res = $res->withStatus(500)->withHeader('Content-type', 'application/json');
     $res->getBody()->write(json_encode(
@@ -24,9 +18,10 @@ function handelPDOException($e,$res){
 }
 
 function handelDb($callback,$req,$res){
+    global $config;
     try{
         $db = getDB();
-        return $callback($req,$res,$db);
+        return $callback($req,$res,$db,$config);
         $db = null;
     }catch(PDOException $e) {
         return handelPDOException($e,$res);
@@ -441,7 +436,7 @@ $app->get('/api/courses/category/{category}',function (Request $req, Response $r
 //get the user's course selection
 $app->get('/api/course-selections/{studentNumber}',function (Request $req, Response $res) {
     return handelDb(
-        function($req,$res,$db){
+        function($req,$res,$db, $config){
             $studentNumber =  $req->getAttribute('studentNumber');
             $sth = $db->prepare(
                 "SELECT
@@ -517,7 +512,7 @@ $app->put('/api/admin/course-selections/semester/{semesterId}/reject/course/{cod
 //create a user's course selection
 $app->post('/api/course-selections',function (Request $req, Response $res) {
     return handelDb(
-        function($req,$res,$db){
+        function($req,$res,$db, $config){
             $token = $req->getHeader($config['auth-header']);
             $auth = new TokenAuth();
             $data = json_decode($req->getbody(),true);
@@ -535,9 +530,6 @@ $app->post('/api/course-selections',function (Request $req, Response $res) {
                         AND   so_semesters_id=:semesterId
                         AND   so_courses_course_code=:courseCode"
                 );
-                if(!$auth->verifyStudentNumber($item['student_number'],$token)){
-                    return $res->withStatus(401);
-                }
                 $sth->bindParam(':studentNumber', $item['student_number'], PDO::PARAM_INT);
                 $sth->bindParam(':semesterId', $item['semester_id'], PDO::PARAM_INT);
                 $sth->bindParam(':courseCode', $item['course_code'], PDO::PARAM_STR);
@@ -581,7 +573,7 @@ $app->post('/api/course-selections',function (Request $req, Response $res) {
 });
 $app->delete('/api/course-selections/student/{studentNumber}/semester/{semesterId}/code/{courseCode}',function (Request $req, Response $res) {
     return handelDb(
-        function($req,$res,$db){
+        function($req,$res,$db, $config){
             $studentNumber =  (int)$req->getAttribute('studentNumber');
             $semester = (int)$req->getAttribute('semesterId');
             $courseCode = trim($req->getAttribute('courseCode'));

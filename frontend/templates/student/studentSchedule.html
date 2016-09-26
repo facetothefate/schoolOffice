@@ -1,4 +1,10 @@
 <md-content  layout-xs="row" layout="row"  ng-cloak>
+    <md-input-container>
+       <label>Semester</label>
+       <md-select ng-model="selected_semester">
+         <md-option ng-repeat="semester in semesters" ng-value="semester">{{semester.semester}}</md-option>
+       </md-select>
+     </md-input-container>
     <table class="mdl-data-table so-course-schedule-table">
         <tbody>
             <tr ng-repeat="day in scheduled">
