@@ -40,37 +40,37 @@ CREATE TABLE `so_courses` (
 --
 
 INSERT INTO `so_courses` (`course_code`, `name`, `credit`, `grade`, `prerequisite`, `so_course_categories_id`) VALUES
-('ADA1O', 'Drama, Opera', 1, 9, 'Null', 9),
+('ADA1O', 'Drama, Opera', 1, 9, NULL, 9),
 ('ADA3M', 'Drama, University|College', 1, 11, 'ADA1O', 9),
 ('ADA4M', 'Drama, University|College', 1, 12, 'ADA3M', 9),
-('BAF3M', 'Financial Accounting Fundamentals, University|College', 1, 11, 'Null', 14),
+('BAF3M', 'Financial Accounting Fundamentals, University|College', 1, 11, NULL, 14),
 ('BAT4M', 'Financial Accounting Principles, University|College', 1, 12, 'BAF3M', 14),
-('BBB4M', 'International Business Fundamentals, University|College', 1, 12, 'Null', 14),
-('BOH4M', 'Business Leadership: Management Fundamentals, University|College', 1, 12, 'Null', 14),
-('CGC1D', 'Geography of Canada, Academic', 1, 9, 'Null', 6),
+('BBB4M', 'International Business Fundamentals, University|College', 1, 12, NULL, 14),
+('BOH4M', 'Business Leadership: Management Fundamentals, University|College', 1, 12, NULL, 14),
+('CGC1D', 'Geography of Canada, Academic', 1, 9, NULL, 6),
 ('CGD3M', 'The Americas: Geography Patterns and Issues, University|College', 1, 11, 'CGC1D', 6),
 ('CGW4U', 'Canadian and World Issues: A Geographic Analysis, University', 1, 12, 'CGD3M', 6),
 ('CHA3U', 'American History, University', 1, 11, 'CHC2D', 7),
-('CHC2D', 'Canadian History Since World War I Academic', 1, 10, 'Null', 7),
+('CHC2D', 'Canadian History Since World War I Academic', 1, 10, NULL, 7),
 ('CHI4U', 'Canada: History, Identity, and Culture', 1, 12, 'CHC3U', 7),
-('CHV20', 'Civics', 0.5, 10, 'Null', 10),
+('CHV20', 'Civics', 0.5, 10, NULL, 10),
 ('ENG1D', 'English Academic', 1, 9, NULL, 1),
 ('ENG2D', 'English Academic', 1, 10, 'ENG1D|ESLDO', 1),
 ('ENG3U', 'English University', 1, 11, 'ENG2D|ESLEO', 1),
 ('ENG4U', 'English University', 1, 12, 'ENG3U', 1),
-('ESLAO', 'ESL, Level 1', 1, 9, 'Null', 2),
+('ESLAO', 'ESL, Level 1', 1, 9, NULL, 2),
 ('ESLBO', 'ESL, Level 2', 1, 9, 'ESLAO', 2),
 ('ESLCO', 'ESL, Level 3', 1, 10, 'ESLBO', 2),
 ('ESLDO', 'ESL, Level 4', 1, 11, 'ESLCO', 2),
 ('ESLEO', 'ESL, Level 5', 1, 12, 'ESLDO', 2),
-('FSF1D', 'Core French Academic', 1, 9, 'Null', 12),
+('FSF1D', 'Core French Academic', 1, 9, NULL, 12),
 ('FSF2D', 'Core French Academic', 1, 10, 'FSF1D', 12),
 ('FSF3U', 'Core French University', 1, 11, 'FSF2D', 12),
 ('FSF4U', 'Core French University', 1, 12, 'FSF3U', 12),
-('GLC20', 'Career Studies, Opera(Half- Credit)', 0.5, 10, 'Null', 10),
-('ICS3U', 'Introduction to Computer Science University', 1, 11, 'Null', 15),
+('GLC20', 'Career Studies, Opera(Half- Credit)', 0.5, 10, NULL, 10),
+('ICS3U', 'Introduction to Computer Science University', 1, 11, NULL, 15),
 ('ICS4U', 'Computer Science University', 1, 12, 'ICS3U', 15),
-('LYXAD', 'International Languages, Academic', 1, 9, 'Null', 11),
+('LYXAD', 'International Languages, Academic', 1, 9, NULL, 11),
 ('LYXBD', 'International Languages, Academic', 1, 10, 'LYXAD', 11),
 ('LYXCU', 'International Languages, University', 1, 11, 'LYXBD', 11),
 ('LYXDU', 'International Languages, University', 1, 12, 'LYXCU', 11),
@@ -78,7 +78,7 @@ INSERT INTO `so_courses` (`course_code`, `name`, `credit`, `grade`, `prerequisit
 ('MCV4U', 'Calculus and Vectors', 1, 12, 'MCR3U&MHF4U', 3),
 ('MDM4U', 'Mathematics of Data Management', 1, 12, 'MCR3U', 3),
 ('MHF4U', 'Advanced Functions', 1, 12, 'MCR3U', 3),
-('MPM1D', 'Principles of Mathematics', 1, 9, 'Null', 3),
+('MPM1D', 'Principles of Mathematics', 1, 9, NULL, 3),
 ('MPM2D', 'Principles of Mathematics', 1, 10, 'MPM1D', 3),
 ('OLC4O10', 'Literacy Course', 1, 10, 'Unsuccessfully tried OSSLT', 13),
 ('OLC4O11', 'Literacy Course', 1, 11, 'Unsuccessfully tried OSSLT', 13),
@@ -89,7 +89,7 @@ INSERT INTO `so_courses` (`course_code`, `name`, `credit`, `grade`, `prerequisit
 ('SBI4U', 'Biology University', 1, 12, 'SBI3U', 4),
 ('SCH3U', 'Chemistry University', 1, 11, 'SNC2D', 4),
 ('SCH4U', 'Chemistry University', 1, 12, 'SCH3U', 4),
-('SNC1D', 'Science Academic', 1, 9, 'Null', 4),
+('SNC1D', 'Science Academic', 1, 9, NULL, 4),
 ('SNC2D', 'Science Academic', 1, 10, 'SNC1D', 4),
 ('SPH3U', 'Physics University', 1, 11, 'SNC2D', 4),
 ('SPH4U', 'Physics University', 1, 12, 'SPH3U', 4);
@@ -359,8 +359,10 @@ CREATE TABLE `so_users` (
 --
 
 INSERT INTO `so_users` (`id`, `username`, `password`, `gender`, `email`, `firstname`, `lastname`, `address1`, `address2`, `city`, `state`, `postal_code`, `telephone`, `role`, `token`, `token_expire`) VALUES
-(1, 'root', 'aJb;#3Ge', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3, NULL, NULL);
+(1, 'root', MD5('aJb;#3Ge'), 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3, NULL, NULL);
 
+INSERT INTO `so_users` (`id`, `username`, `password`, `gender`, `email`, `firstname`, `lastname`, `address1`, `address2`, `city`, `state`, `postal_code`, `telephone`, `role`, `token`, `token_expire`) VALUES
+('2', 'DemoTeacher', MD5('123456'), '0', NULL, 'Demo', 'Teacher', NULL, NULL, NULL, NULL, NULL, NULL, '2', NULL, NULL);
 --
 -- Indexes for dumped tables
 --
@@ -483,17 +485,17 @@ ALTER TABLE `so_users`
 -- 使用表AUTO_INCREMENT `so_schedule`
 --
 ALTER TABLE `so_schedule`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- 使用表AUTO_INCREMENT `so_semesters`
 --
 ALTER TABLE `so_semesters`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- 使用表AUTO_INCREMENT `so_users`
 --
 ALTER TABLE `so_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- 限制导出的表
 --

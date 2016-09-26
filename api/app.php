@@ -353,7 +353,7 @@ $app->post('/api/admin/students',function(Request $req, Response $res){
             $rowCountStudent = $sth->rowCount();
             if($rowCountUser && $rowCountStudent){
                 $subject = "Your student account password";
-                $message = "Hi, your student account have been created, here is your password:"+$data['password'];
+                $message = "Hi,\n Your student account have been created.\nYour student number is:".$data['username']."\nYour password is:".$data['password'];
                 $from = $conifg['site-email'];
                 $headers = "From: $from";
                 mail($data['email'],$subject,$message,$headers);
