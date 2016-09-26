@@ -23,8 +23,8 @@ function(NgTableParams,$scope,$location,$mdDialog,$routeParams,rest){
     }
     if($routeParams.action==="edit"){
         rest.students.get({"id":$routeParams.studentNumber},function(student){
-            student.birthday = new Date(student.birthday);
-            student.enter_date = new Date(student.enter_date);
+            student.birthday = new Date(student.birthday+' 00:00:00');
+            student.enter_date = new Date(student.enter_date+' 00:00:00');
             $scope.student = student;
             rest.course_selections.get({studentNumber:student.student_number},function(selections){
                 for(var i=0;i<selections.length;i++){

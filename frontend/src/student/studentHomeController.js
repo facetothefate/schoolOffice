@@ -66,7 +66,7 @@ function($scope,rest,color,$mdMedia,$mdDialog,NgTableParams){
             $scope.student = student;
             rest.semesters_open.get({},function(semester){
                 $scope.semester = semester;
-                var enterDate = new Date(student.enter_date);
+                var enterDate = new Date(student.enter_date+' 00:00:00');
                 var enterYear = enterDate.getFullYear();
                 var enterMonth = enterDate.getMonth()+1;
                 var enterGrade = parseInt(student.enter_grade);
