@@ -218,5 +218,12 @@ function(NgTableParams,$scope,$routeParams,$location,rest){
             $scope.unscheduled.push(item);
         }
     };
+    $scope.reject = function(item){
+        rest.courses_schedule.reject({semester:$routeParams.semester,code:item.code},{},function(){
+            render();
+        },function(){
+            alert("Something wrong, please connect facetothefate@gmail.com");
+        });
+    };
     render();
 }]);

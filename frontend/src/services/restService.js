@@ -48,6 +48,14 @@ angular.module('school-office').factory('RestService',function($resource){
                 params:{
                     semester:"@semester_id"
                 }
+            },
+            'reject':{
+                url:'../api/admin/course-selections/semester/:semester/reject/course/:code',
+                method:"PUT",
+                params:{
+                    semester:"@semester_id",
+                    code:"@code"
+                }
             }
         }),
         'semesters':$resource('../api/semesters/:id',{id:'@id'},{

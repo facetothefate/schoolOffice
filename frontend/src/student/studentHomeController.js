@@ -127,6 +127,13 @@ function($scope,rest,color,$mdMedia,$mdDialog,NgTableParams){
                                 break;
                             case '1':
                                 selections[i].status_text = 'Selected';
+                                break;
+                            case '2':
+                                selections[i].status_text = 'Rejected';
+                                break;
+                            case '3':
+                                selections[i].status_text = 'Dropped';
+                                break;
                             default:
                                 selections[i].removable = false;
 
