@@ -369,7 +369,33 @@ $app->post('/api/admin/students',function(Request $req, Response $res){
 $app->put('/api/students',function(Request $req, Response $res){
     return handelDb(
         function($req,$res,$db){
-
+            $data = json_decode($req->getbody(),true);
+            $sth = $db->prepare(
+                "UPDATE
+                    `so_users`
+                    SET `email` = :email,
+                        `address1` = :address1,
+                        `address2` = :address2,
+                        `city` = :city,
+                        `state` = :state,
+                        `postal_code` = :postal_code,
+                        `telephone` = ':telephone'
+                        WHERE `so_users`.`username` = :username");
+            $sth->bindParam(':email',$data['email'],PDO::PARAM_STR);
+            $sth->bindParam(':address1',$data['address1'],PDO::PARAM_STR);
+            $sth->bindParam(':address2',$data['address2'],PDO::PARAM_STR);
+            $sth->bindParam(':city',$data['city'],PDO::PARAM_STR);
+            $sth->bindParam(':state',$data['state'],PDO::PARAM_STR);
+            $sth->bindParam(':postal_code',$data['postal_code'],PDO::PARAM_STR);
+            $sth->bindParam(':telephone',$data['telephone'],PDO::PARAM_STR);
+            $sth->bindParam(':username',$data['username'],PDO::PARAM_STR);
+            $sth->execute();
+            $rowCount = $sth->rowCount();
+            if($rowCount){
+                return $res->withStatus(200);
+            }else{
+                return $res->withStatus(300);
+            }
         },
         $req,$res
     );
@@ -378,7 +404,62 @@ $app->put('/api/students',function(Request $req, Response $res){
 $app->put('/api/admin/students',function(Request $req, Response $res){
     return handelDb(
         function($req,$res,$db){
-
+            $data = json_decode($req->getbody(),true);
+            if(!$data){
+                return  $res->withStatus(405);
+            }
+            $sth = $db->prepare(
+                "UPDATE
+                    `so_users`
+                    SET
+                        `email` = :email,
+                        `firstname` = :firstname,
+                        `lastname` = :lastname,
+                        `gender`  = :gender,
+                        `address1` = :address1,
+                        `address2` = :address2,
+                        `city` = :city,
+                        `state` = :state,
+                        `postal_code` = :postal_code,
+                        `telephone` = ':telephone'
+                        WHERE `so_users`.`id` =
+                            (
+                                SELECT `so_students`.`so_users_id` FROM `so_students`
+                                WHERE `so_students`.`student_number` = :studentNumber
+                            )");
+            $sth->bindParam(':email',$data['email'],PDO::PARAM_STR);
+            $sth->bindParam(':firstname',$data['firstname'],PDO::PARAM_STR);
+            $sth->bindParam(':lastname',$data['lastname'],PDO::PARAM_STR);
+            $sth->bindParam(':address1',$data['address1'],PDO::PARAM_STR);
+            $sth->bindParam(':gender',(int)$data['gender'],PDO::PARAM_INT);
+            $sth->bindParam(':address2',$data['address2'],PDO::PARAM_STR);
+            $sth->bindParam(':city',$data['city'],PDO::PARAM_STR);
+            $sth->bindParam(':state',$data['state'],PDO::PARAM_STR);
+            $sth->bindParam(':postal_code',$data['postal_code'],PDO::PARAM_STR);
+            $sth->bindParam(':telephone',$data['telephone'],PDO::PARAM_STR);
+            $sth->bindParam(':studentNumber',(int)$data['student_number'],PDO::PARAM_INT);
+            $sth->execute();
+            $rowCountUser = $sth->rowCount();
+            $sth = $db->prepare(
+                "UPDATE `so_students`
+                    SET `oen` = :oen,
+                        `enter_grade` = :enter_grade,
+                        `enter_date` = ':enter_date',
+                        `birthday` = :birthday
+                    WHERE
+                    `so_students`.`student_number` = :studentNumber");
+            $sth->bindParam(':oen',$data['oen'],PDO::PARAM_STR);
+            $sth->bindParam(':enter_grade',$data['enter_grade'],PDO::PARAM_STR);
+            $sth->bindParam(':enter_date',$data['enter_date'],PDO::PARAM_STR);
+            $sth->bindParam(':birthday',$data['birthday'],PDO::PARAM_STR);
+            $sth->bindParam(':studentNumber',(int)$data['student_number'],PDO::PARAM_INT);
+            $sth->execute();
+            $rowCountStudent = $sth->rowCount();
+            if(!$rowCountUser||!$rowCountStudent){
+                return $res->withStatus(300);
+            }else{
+                return $res->withStatus(200);
+            }
         },
         $req,$res
     );
@@ -578,6 +659,38 @@ $app->post('/api/course-selections',function (Request $req, Response $res) {
         $req,$res
     );
 });
+//Drop a course
+$app->put('/api/course-selections/student/{studentNumber}/semester/{semesterId}/code/{courseCode}/drop',function (Request $req, Response $res) {
+    return handelDb(
+        function($req,$res,$db, $config){
+            $studentNumber =  (int)$req->getAttribute('studentNumber');
+            $semester = (int)$req->getAttribute('semesterId');
+            $courseCode = trim($req->getAttribute('courseCode'));
+            $sth = $db->prepare(
+                "UPDATE `so_course_selections`
+                    SET `status` = 3
+                    WHERE `so_course_selections`.`so_students_student_number` = :studentNumber
+                    AND `so_course_selections`.`so_semesters_id` =  :semesterId
+                    AND `so_course_selections`.`so_courses_course_code` = :courseCode;
+                    AND `so_course_selections`.'status' != 1
+                    "
+            );
+            $sth->bindParam(':studentNumber', $studentNumber, PDO::PARAM_INT);
+            $sth->bindParam(':semesterId', $semester, PDO::PARAM_INT);
+            $sth->bindParam(':courseCode', $courseCode, PDO::PARAM_STR);
+            $ret = $sth->execute();
+            $rowCount = $sth->rowCount();
+            if($rowCount)
+                return $res->withStatus(200);
+            else {
+                return sendJson($res,404,["error" => "Cannot find for ".$studentNumber."-".$semester."-".$courseCode.""]);
+            }
+        },
+        $req,$res
+    );
+});
+
+//delete the course selection
 $app->delete('/api/course-selections/student/{studentNumber}/semester/{semesterId}/code/{courseCode}',function (Request $req, Response $res) {
     return handelDb(
         function($req,$res,$db, $config){

@@ -153,10 +153,18 @@
 					</td>
 					<td>
 						<md-button class="md-raised md-warn" ng-disabled="!loading"  ng-if="selection.status==0">Reject</md-button>
-						<md-button class="md-raised md-warn" ng-disabled="!loading" ng-if="selection.status==1">Drop</md-button>
+						<md-button class="md-raised md-warn" ng-disabled="loading" ng-if="selection.status==1" ng-click="drop(selection)">Drop</md-button>
 					</td>
 				</tr>
 			</table>
+            <div layout="row">
+                <md-button class="md-raised md-primary" ng-disabled="!selectedSemester" ng-click="openCourseSelection(selectedSemester)">
+                    Select a course for this student For
+                </md-button>
+                <md-select ng-model="selectedSemester">
+                    <md-option ng-repeat="semester in semesters" ng-value="semester">{{semester.semester}}</md-option>
+                </md-select>
+            </div>
         </md-content>
       </md-tab>
       <md-tab ng-if="edit" label="Transcripts">

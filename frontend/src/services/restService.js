@@ -4,6 +4,10 @@ angular.module('school-office').factory('RestService',function($resource){
             'save':{
                 url:'../api/admin/students',
                 method:"POST",
+            },
+            'admin_update':{
+                url:'../api/admin/students',
+                method:"PUT",
             }
         }),
         'student_username':$resource('../api/students/user/:username',{username:"@username"}),
@@ -17,6 +21,15 @@ angular.module('school-office').factory('RestService',function($resource){
             'remove':{
                 url:"../api/course-selections/student/:studentNumber/semester/:semester/code/:code",
                 method:"DELETE",
+                params:{
+                    studentNumber:"@student_number",
+                    semester:"@semester_id",
+                    code:"@code"
+                }
+            },
+            'drop':{
+                url:"../api/course-selections/student/:studentNumber/semester/:semester/code/:code/drop",
+                method:"PUT",
                 params:{
                     studentNumber:"@student_number",
                     semester:"@semester_id",
