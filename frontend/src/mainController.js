@@ -33,12 +33,21 @@ angular.module('school-office').controller('mainController',[
         }else{
             $rootScope.token = token;
         };
+        $scope.$on('login-success',function(){
+            var token = AuthService.getLocalToken();
+            if(!token){
+                showDialog();
+            }else{
+                $rootScope.token = token;
+            };
+        })
         $scope.$on('access-denied',function(){
             showDialog();
         });
         $scope.logout = function(){
             AuthService.logout();
             $rootScope.$broadcast('logout');
+            $rootScope.token = null;
             showDialog();
         };
     }

@@ -416,12 +416,12 @@ $app->put('/api/admin/students',function(Request $req, Response $res){
                         `firstname` = :firstname,
                         `lastname` = :lastname,
                         `gender`  = :gender,
-                        `address1` = :address1,
-                        `address2` = :address2,
+                        `address1` = :addressFirst,
+                        `address2` = :addressSecond,
                         `city` = :city,
                         `state` = :state,
-                        `postal_code` = :postal_code,
-                        `telephone` = ':telephone'
+                        `postal_code` = :postalCode,
+                        `telephone` = :telephone
                         WHERE `so_users`.`id` =
                             (
                                 SELECT `so_students`.`so_users_id` FROM `so_students`
@@ -430,21 +430,21 @@ $app->put('/api/admin/students',function(Request $req, Response $res){
             $sth->bindParam(':email',$data['email'],PDO::PARAM_STR);
             $sth->bindParam(':firstname',$data['firstname'],PDO::PARAM_STR);
             $sth->bindParam(':lastname',$data['lastname'],PDO::PARAM_STR);
-            $sth->bindParam(':address1',$data['address1'],PDO::PARAM_STR);
-            $sth->bindParam(':gender',(int)$data['gender'],PDO::PARAM_INT);
-            $sth->bindParam(':address2',$data['address2'],PDO::PARAM_STR);
+            $sth->bindParam(':gender',$data['gender'],PDO::PARAM_INT);
+            $sth->bindParam(':addressFirst',$data['address1'],PDO::PARAM_STR);
+            $sth->bindParam(':addressSecond',$data['address2'],PDO::PARAM_STR);
             $sth->bindParam(':city',$data['city'],PDO::PARAM_STR);
             $sth->bindParam(':state',$data['state'],PDO::PARAM_STR);
-            $sth->bindParam(':postal_code',$data['postal_code'],PDO::PARAM_STR);
+            $sth->bindParam(':postalCode',$data['postal_code'],PDO::PARAM_STR);
             $sth->bindParam(':telephone',$data['telephone'],PDO::PARAM_STR);
-            $sth->bindParam(':studentNumber',(int)$data['student_number'],PDO::PARAM_INT);
+            $sth->bindParam(':studentNumber',$data['student_number'],PDO::PARAM_INT);
             $sth->execute();
             $rowCountUser = $sth->rowCount();
             $sth = $db->prepare(
                 "UPDATE `so_students`
                     SET `oen` = :oen,
                         `enter_grade` = :enter_grade,
-                        `enter_date` = ':enter_date',
+                        `enter_date` = :enter_date,
                         `birthday` = :birthday
                     WHERE
                     `so_students`.`student_number` = :studentNumber");
@@ -452,11 +452,11 @@ $app->put('/api/admin/students',function(Request $req, Response $res){
             $sth->bindParam(':enter_grade',$data['enter_grade'],PDO::PARAM_STR);
             $sth->bindParam(':enter_date',$data['enter_date'],PDO::PARAM_STR);
             $sth->bindParam(':birthday',$data['birthday'],PDO::PARAM_STR);
-            $sth->bindParam(':studentNumber',(int)$data['student_number'],PDO::PARAM_INT);
+            $sth->bindParam(':studentNumber',$data['student_number'],PDO::PARAM_INT);
             $sth->execute();
             $rowCountStudent = $sth->rowCount();
             if(!$rowCountUser||!$rowCountStudent){
-                return $res->withStatus(300);
+                return $res->withStatus(204);
             }else{
                 return $res->withStatus(200);
             }
@@ -610,35 +610,55 @@ $app->post('/api/course-selections',function (Request $req, Response $res) {
             if(is_assoc($data)){
                 $data = array($data);
             }
+            $studentNumber = $data[0]['student_number'];
             //print_r($data);
             foreach ($data as $item) {
+                if($studentNumber!==$item['student_number']){
+                    return $res->withStatus(401);
+                }
                 $sth = $db->prepare(
                     "SELECT count(*) FROM `so_course_selections`
                         WHERE so_students_student_number=:studentNumber
-                        AND   so_semesters_id=:semesterId
-                        AND   so_courses_course_code=:courseCode"
+                        AND   so_courses_course_code=:courseCode
+                        AND   status<=1"
                 );
                 $sth->bindParam(':studentNumber', $item['student_number'], PDO::PARAM_INT);
-                $sth->bindParam(':semesterId', $item['semester_id'], PDO::PARAM_INT);
+                //$sth->bindParam(':semesterId', $item['semester_id'], PDO::PARAM_INT);
                 $sth->bindParam(':courseCode', $item['course_code'], PDO::PARAM_STR);
                 $ret = $sth->execute();
                 $numberRow = $sth->fetchColumn();
                 if($numberRow){
-                    return sendJson($res,409,['error'=>'You have already select that course:'. $item['course_code']]);
+                    return $res->withJson(['error'=>'You have already select that course:'. $item['course_code']],409);
                 }
+                //check the prerequisite
                 $sth = $db->prepare(
                     "SELECT count(*) FROM `so_courses`
                         INNER JOIN `so_course_selections`
                         ON `so_courses`.prerequisite = `so_course_selections`.so_courses_course_code
                         WHERE `so_courses`.course_code = :courseCode
-                        AND `so_course_selections`.status !='0'"
+                        AND `so_course_selections`.status <=1"
                 );
                 $sth->bindParam(':courseCode', $item['course_code'], PDO::PARAM_STR);
                 $ret = $sth->execute();
                 $numberRow = $sth->fetchColumn();
                 if($numberRow){
-                    return sendJson($res,400,['error'=>'You have not met that course prerequisite:'. $item['course_code']]);
+                    return $res->withJson(['error'=>'You have not met that course prerequisite:'. $item['course_code']],400);
                 }
+
+                /*** fix me need check the prerequisites one by one
+                $sth = $db->prepare(
+                    "SELECT prerequisite FROM `so_courses`
+                        WHERE `so_courses`.course_code = :courseCode"
+                );
+                $sth->bindParam(':courseCode', $item['course_code'], PDO::PARAM_STR);
+                $ret = $sth->execute();
+                $resData = $sth->fetchAll(PDO::FETCH_ASSOC);
+                $prerequisites = $resData['prerequisite'];
+                if(strpos($prerequisites,'|')){
+
+                }*/
+
+                //Save
                 $sth = $db->prepare(
                     "INSERT INTO
                         `so_course_selections`
@@ -683,7 +703,7 @@ $app->put('/api/course-selections/student/{studentNumber}/semester/{semesterId}/
             if($rowCount)
                 return $res->withStatus(200);
             else {
-                return sendJson($res,404,["error" => "Cannot find for ".$studentNumber."-".$semester."-".$courseCode.""]);
+                return $res->withJson(["error" => "Cannot find for ".$studentNumber."-".$semester."-".$courseCode.""],404);
             }
         },
         $req,$res
@@ -714,7 +734,7 @@ $app->delete('/api/course-selections/student/{studentNumber}/semester/{semesterI
             if($rowCount)
                 return $res->withStatus(200);
             else {
-                return sendJson($res,404,["error" => "Cannot find for ".$studentNumber."-".$semester."-".$courseCode.""]);
+                return $res->withJson(["error" => "Cannot find for ".$studentNumber."-".$semester."-".$courseCode.""],404);
             }
         },
         $req,$res
