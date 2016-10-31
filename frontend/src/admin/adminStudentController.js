@@ -156,7 +156,7 @@ function(NgTableParams,$scope,$location,$mdMedia,$mdDialog,$routeParams,rest){
             .then(function(selections) {
                 getSelections();
             },function(){
-                alert("Select failed, please Try agian later");
+                //alert("Select failed, please Try agian later");
             });
             $scope.$watch(function() {
                 return $mdMedia('xs') || $mdMedia('sm');

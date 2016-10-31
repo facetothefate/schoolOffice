@@ -6,7 +6,7 @@ angular.module('school-office').factory('AuthService',function($http,$q,$window)
                 username: username,
                 password: password
             }).then(function(result) {
-                $window.sessionStorage.setItem('token',JSON.stringify(result.data));
+                $window.sessionStorage.setItem('0213school-office-token',JSON.stringify(result.data));
                 deferred.resolve(result.data);
             }, function(error) {
                 deferred.reject(error);
@@ -14,17 +14,17 @@ angular.module('school-office').factory('AuthService',function($http,$q,$window)
             return deferred.promise;
         },
         'logout':function(username){
-            $window.sessionStorage.removeItem('token');
+            $window.sessionStorage.removeItem('0213school-office-token');
         },
         'getLocalToken':function(){
-            return JSON.parse($window.sessionStorage.getItem('token'));
+            return JSON.parse($window.sessionStorage.getItem('0213school-office-token'));
         }
     };
 });
 angular.module('school-office').factory('AuthHttpInterceptor',function($q,$injector,$window){
     return {
         'request':function(req){
-            var token = JSON.parse($window.sessionStorage.getItem('token'));
+            var token = JSON.parse($window.sessionStorage.getItem('0213school-office-token'));
             if(token){
                 req.headers['Token-Authorization-X'] = token.token;
             }
